@@ -1,0 +1,39 @@
+doctype html
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title Iniciar Sesión - Sistema de Prescripciones Médicas
+    link(rel="stylesheet", href="/css/style.css")
+    link(rel="icon", type="image/png", href="/images/medicina.png")
+    link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css")
+    script(src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js")
+
+  body
+    .login-container
+      .container-login
+        h1 Iniciar Sesión
+        form#loginForm(action="/login", method="POST")
+          .form-group
+            label.labellogin(for="email") Correo Electrónico:
+            input.form-control(type="email", id="emaillogin", name="email", required)
+          .form-group
+            label.labellogin(for="password") Contraseña:
+            input.form-control(type="password", id="passwordlogin", name="password", minlength="6", required)
+            p.error-message#passwordloginError
+          button#blogin.btn.btn-primary(type="submit") Ingresar
+
+      // Modal para mostrar errores
+      .modal.fade#errorModal(tabindex="-1", aria-labelledby="errorModalLabel", aria-hidden="true")
+        .modal-dialog
+          .modal-content
+            .modal-header
+              h5.modal-title#errorModalLabel Error
+              button(type="button", class="btn-close", data-bs-dismiss="modal", aria-label="Close")
+            .modal-body
+              p#errorModalMessage
+            .modal-footer
+              button(type="button", class="btn btn-secondary", data-bs-dismiss="modal") Cerrar
+    script(src="/js/login.js", defer)          
+    //script(src="/js/registro.js", defer)
+   

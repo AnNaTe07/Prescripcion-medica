@@ -1,0 +1,100 @@
+// Sección Medicamentos
+.container
+  .section
+    h3 Medicamentos    
+    .medicamento-row.hidden
+      .form-row
+        .form-group.col-md-12
+          label(for="nombre") Nombre Genérico*
+          input.form-control#nomgen(type="text", name="nombre", required, list="nombres",class="medicamento-input")
+          datalist#nombres(name="nombres")
+          div#errorNomgen.error-message  
+          input.form-control#medicamentoId(type="hidden", name="medicamentoId")
+     
+      .form-row
+        .form-group.col-md-12
+          label(for="comerciale") Nombre Comercial
+          input.form-control#nomcom(type="text", name="nombre_comercial", list="nombre_comercials",class="medicamento-input",required)
+          datalist#nombre_comercials(name="comerciale")
+      
+           
+      h5 Administración
+      .form-row     
+        input.form-control#administracion(type="hidden", name="administracionId")   
+        input.form-control#dosisId(type="hidden", name="dosisId")
+        input.form-control#tiempoId(type="hidden", name="tiempoId")
+        input.form-control#duracionId(type="hidden", name="duracionId")
+        .form-group.col-md-4
+          label(for='dosis') Dosis* 
+          input.form-control#dosis(type="text", name="dosis", list="dosiss",class="medicamento-input", required)
+          datalist#dosiss(name="dosiss")  
+          div#errorDosis.error-message           
+          
+        .form-group.col-md-4
+          label(for='tiempo') Tiempo*
+          input.form-control#tiempo(type='text', name='tiempo',list="tiempos",class="medicamento-input", required)
+          datalist#tiempos(name="tiempos")
+          div#errorTiempo.error-message    
+
+        .form-group.col-md-4
+          label(for='duracion') Duración*
+          input.form-control#duracion(type="text",name="duracion",list="duracions",class="medicamento-input", required)
+          datalist#duracions(name="duracions")
+          div#errorDuracion.error-message
+
+      //.form-row
+        .form-group.col-md-6
+          label(for="categoria") Buscar por Categoría
+          input.form-control#categoria(type="text", name="categoria",class="medicamento-input", list="categrias")
+          datalist#categorias
+      
+        .form-group.col-md-6
+          label(for="familia") Buscar por Familia
+          input.form-control#familia(type="text", name="familia", list="familias",class="medicamento-input")  
+          datalist#familias
+      //.d-flex.justify-content-between.mt-3
+      // Contenedor de botones
+    .row.mt-3.pb-5
+      .col
+        button.btn.btn-primary.add-medicamento(type="button") Agregar Medicamento
+    
+      .col
+        button.btn.btn-danger.min-medicamento(type="button", style="display: none;") Remover
+      
+      .col   
+        button.btn.btn-primary.confirmarM(type="button", style="display: none;") Confirmar
+
+    // contenedor de medicamento
+    #contenedor-medicamento(style="display: none;")
+    .d-flex.justify-content-between.mt-3
+      div#lista-medicamentos
+    .form-row
+          .form-group.col-md-6
+            p#mensajeMedicamento(style="display:none;")
+
+    // Modal for notifications
+    .modal.fade#notificationModalMed(tabindex="-1" role="dialog" aria-labelledby="notificationModalLabel" aria-hidden="true")
+      .modal-dialog(role="document")
+        .modal-content
+          .modal-header
+            h5.modal-title#notificationModalLabelM Notificacion
+            button.close(type="button" data-dismiss="modal" aria-label="Close")
+              span(aria-hidden="true") &times;
+          .modal-body
+            p#notificationMessageMedicamento  
+    // Modal
+    .modal.fade(id="modalM" tabindex="-1" role="dialog")
+     .modal-dialog(role="document")
+       .modal-content
+         .modal-header
+           h5.modal-title#modal-title Modal title
+           button.close(type="button" data-dismiss="modal" aria-label="Close")
+             span(aria-hidden="true") &times;
+         .modal-body#modal-bodyM
+           p Modal body text goes here.
+         .modal-footer
+             button.btn.btn-secondary(type="button" data-dismiss="modal") Cerrar
+
+    script(src='/js/medicamento.js')
+    script(src='/js/medicamento2.js')
+       

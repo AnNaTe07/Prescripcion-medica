@@ -1,0 +1,33 @@
+nav.col-md-2.d-none.d-md-block.sidebar
+  .sidebar-sticky
+      
+    
+    .d-flex.flex-column.align-items-center
+      .d-flex.flex-row.align-items-center
+        h5#persona_nombre.mt-2
+        h5#persona_apellido.ml-2.mt-2
+      
+      if rol === 'profesional' || rol === 'admin_profesional'
+        .d-flex.flex-column.align-items-center.mt-1
+          p#profesion_nombre.mb-1
+          p#especialidad_nombre.mb-1
+          p#idREFEPS.mb-1
+      
+      if rol === 'administrador'
+        .d-flex.flex-column.align-items-center.mt-3
+          p#rol.mb-1
+            
+   
+
+    ul.nav.flex-column.mt-4  
+      if rol === 'admin_profesional' || rol === 'profesional'
+        li.nav-item
+          a.nav-link(href="/formPrescripcion") Nueva Prescripción
+      if rol === 'administrador' || rol === 'admin_profesional'
+        li.nav-item
+          a.nav-link(href="/formUsuario") Usuarios
+        //li.nav-item
+          a.nav-link(href="/formPaciente") Pacientes
+      if rol === 'administrador' || rol === 'admin_profesional'
+        li.nav-item
+          a.nav-link(href="/formMedicamento") Medicamentos

@@ -1,0 +1,148 @@
+extends layouts/layout
+
+block content
+  .tab-content#myTabContent
+  .tab-pane.fade.show.active#tab1(role="tabpanel", aria-labelledby="tab1-tab")
+      .row.ml-5
+        .col-md-11.mt-4.pt-5.pb-5
+          .d-flex.justify-content-between.align-items-center
+            h2 Medicamentos
+      
+            // Toggle switch para elegir entre registro y modificación
+            .form-group
+              label(for="modoFormulario")
+              .d-flex.align-items-center
+                span.mr-2 Registro
+                .custom-control.custom-switch
+                  input.custom-control-input#modoFormulario(type="checkbox")
+                  label.custom-control-label(for="modoFormulario")
+                span.ml-2 Modificación
+          form(id="medicamentoForm",action="submit")
+            .form
+              .form-row
+                .form-group.col-md-12
+                  label#labeln(for="buscar") Buscar Medicamento
+                  input.form-control#buscar(type="text", name="buscar", list="nombreGenericoList", required)
+                  datalist#nombreGenericoList
+                    option(value="") 
+              .form-row
+                .form-group.col-md-12
+                  label(for="nombre") Nombre Genérico*
+                  input.form-control#nombre(type="text", name="nombre", required, readonly)
+                
+                //.form-group.col-md-4
+                
+                  button.btn.btn-secondary#buscarBtn(type="submit") Buscar
+                .form-group.col-md-4
+                  button.btn.btn-secondary(type="button" onclick="limpiarForm()") Limpiar campos
+                  input.form-control#medicamentoId(type="hidden", name="medicamentoId")
+              .ocultar
+              h4 Componentes de Monodroga - Concentración
+              // Contenedor para el registro
+              div.componentesContainerRegistro#componentesContainerRegistro
+                .componentes-concentracionR.col-md-12
+              div.componentesContainerModificar#componentesContainerModificar   
+              
+                .form-row.component
+                  .form-group.col-md-3                      
+                    
+                  .componentes-concentracion.col-md-9
+                    
+                    .concentraciones-extra
+                      .form-group.col-md-4.d-flex.align-items-end
+                        //button.btn.btn-primary.addConcentracion(type="button", onclick="addConcentracion(this)") Agregar Concentración
+                   
+                // contenedor flex para los botones
+              .d-flex.justify-content-between.mt-3
+               // Contenedor de botones
+              .row.mt-3.pb-5
+                .col
+                  button.btn.btn-secondary.addComponente#addComponenteButton(type="button") Agregar Componente
+                  p#errorComponente.error-message
+                .col
+                  //button.btn.btn-danger(type="button", onclick="removeComponente(this)") Remover
+              
+             
+            div.campos.componentes-container2
+            .form-row
+              .form-group.col-md-6
+                label(for="nombre_comercial") Nombre Comercial
+                input.form-control#nombre_comercial(type="text", name="nombre_comercial")
+              .form-group.col-md-6
+                label(for="estado") Estado del medicamento
+                select.form-control#estado(name="estado", required)
+                  option(value='') Seleccione...
+                  option(value='Activo', selected) Activo
+                  option(value='Inactivo') Inactivo
+            
+            .form-row
+              .form-group.col-md-3
+                label(for="categoria") Categoría*
+                input.form-control.categoria-input#categoria(type="text", name="categoria",class="medicamento-input", list="categorias")
+                datalist#categorias
+            
+              .form-group.col-md-3
+                label(for="familia") Familia*
+                input.form-control.familia-input#familia(type="text", name="familia",class="medicamento-input", list="familias")  
+                datalist#familias
+                         
+              .form-group.col-md-3
+                label(for="forma_farmaceutica") Forma Farmacéutica*
+                input.form-control.forma_farmaceutica-input#forma_farmaceutica(type="text", name="forma_farmaceutica",  list="forma_farmaceuticas", class="medicamento-input", required)
+                datalist#forma_farmaceuticas(name="forma_farmaceutica")
+                  if formas && formas.length > 0  
+                    each forma in formas
+                      option(value=forma.id, data-id=forma.id)= forma.nombre 
+                div#errorForma.error-message
+              .form-group.col-md-3
+                label(for="presentacion") Presentación* 
+                input.form-control.presentacion-input#presentacion(type="text", name="presentacion",list="presentacions",class="medicamento-input", required)
+                datalist#presentacions(name="presentacion")
+                  if presentaciones && presentaciones.length > 0
+                    each presentacion in presentaciones
+                      option(value=presentacion.nombre, data-id=presentacion.id)= presentacion.nombre
+                div#errorPresentacion.error-message
+            .row.pt-4                                
+              .col.text-end
+                // Botón visible solo en modo Registro
+                button.btn.btn-primary#btnRegistrar(type="button") Registrar
+                // Botón visible solo en modo Modificación
+                button.btn.btn-primary#btnModificar(type="button") Modificar
+        
+            // Modal for notifications
+            .modal.fade#notificationModalMed(tabindex="-1" role="dialog" aria-labelledby="notificationModalLabel" aria-hidden="true")
+              .modal-dialog(role="document")
+                .modal-content
+                  .modal-header
+                    h5.modal-title#notificationModalLabelM Notificacion
+                    button.close(type="button" data-dismiss="modal" aria-label="Close")
+                      span(aria-hidden="true") &times;
+                  .modal-body
+                    p#notificationMessageMedicamento  
+            // Modal
+            .modal.fade(id="modalM" tabindex="-1" role="dialog")
+             .modal-dialog(role="document")
+               .modal-content
+                 .modal-header
+                   h5.modal-title#modal-title Modal title
+                   button.close(type="button" data-dismiss="modal" aria-label="Close")
+                     span(aria-hidden="true") &times;
+                 .modal-body#modal-bodyM
+                   p Modal body text goes here.
+                 .modal-footer
+                     button.btn.btn-secondary(type="button" data-dismiss="modal") Cerrar
+
+      
+                  
+                   
+            
+         
+
+
+        script(src="/js/medicamentoRegistrarFront.js")
+        script(src="/js/medicamentoFrontModificar.js")  
+        
+        script(src="/js/mRegistroMedicamento.js")
+        script(src="/js/mModificarMedicamento.js")
+
+  

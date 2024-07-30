@@ -1,0 +1,72 @@
+
+extends layouts/layout
+
+block content
+
+ 
+  .tab-content#myTabContent
+    .tab-pane.fade.show.active#tab1(role="tabpanel", aria-labelledby="tab1-tab")
+        .row.ml-5
+          .col-md-11.mt-4
+            form#formulario(action="/prescripcion/crear", method="POST")
+              
+              // Sección profesional
+              //.section
+                include profesional
+         
+            // Sección paciente
+            .section
+              include paciente
+            
+            // Sección medicamento
+            .section
+              include medicamento
+            // Sección prestacion
+            .section
+              include prestacion 
+             
+                input(type="hidden", id="profesionalId", name="profesionalId", value=profesionalId)
+              
+              .form-row
+                .form-group.col-md-6
+                  label(for='obraSocial') Obra Social*:
+                  select.form-control.obraSocialSelect#obraSocialP(name='obraSocial', required)                  
+                    option(value="")
+                    div#errorPresc1.error-message
+
+                .form-group.col-md-6
+                  label(for='plan') Plan*:
+                  select.form-control.planSelect#planPrescripcion(name='plan' required)
+                    option(value="")
+                    div#errorPresc2.error-message
+  
+            
+                .form-group.col-md-12
+                  label(for='diagnostico') Diagnóstico*:
+                  input.form-control#diagnosticos(type="text", name="diagnostico", list="listaDiagnosticos", required)
+                  datalist(id="listaDiagnosticos")
+                    option(value="")
+                  div#errorPresc3.error-message
+             
+              // Sección Enviar por Email e Imprimir
+              .section
+                h3 Opciones de Envío
+                .form-row
+                  .form-group.col-md-4
+                    div
+                      input.form-check-input(type="checkbox", id="enviarEmail")
+                      label(for="enviarEmail") Enviar por e-mail
+                  .form-group.col-md-4
+                    div
+                      input.form-check-input(type="checkbox", id="imprimir")
+                      label(for="imprimir") Imprimir
+                  .form-group.col-md-4
+                    button.btn.btn-success(type="button", id="guardar") Guardar
+
+           
+                  .form-group.col-md-6
+                      p#mensajePrescripcion(style="display:none;")       
+
+    script(src="/js/profesional.js")
+    script(src="/js/prescripcion.js")
+

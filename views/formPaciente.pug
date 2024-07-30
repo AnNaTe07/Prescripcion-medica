@@ -1,0 +1,119 @@
+extends layouts/layout
+
+block content
+  ul.nav.nav-tabs#myTab(role="tablist")
+    li.nav-item
+      a.nav-link.active(href="#tab1", id="tab1-tab", data-toggle="tab", role="tab", aria-controls="tab1", aria-selected="true") Registrar Paciente
+    li.nav-item
+      a.nav-link(href="#tab2", id="tab2-tab", data-toggle="tab", role="tab", aria-controls="tab2", aria-selected="false") Modificar/Eliminar Paciente
+
+  .tab-content#myTabContent
+    .tab-pane.fade.show.active#tab1(role="tabpanel", aria-labelledby="tab1-tab")
+      .row.ml-5
+        .col-md-11.mt-4
+          h2 Registro de Nuevo Paciente
+          form(action='/nuevoPaciente' method='POST')
+           .form-row
+              .form-group.col-md-6
+                label(for="nombre") Nombre*
+                input.form-control#nombre(type="text", required)
+              .form-group.col-md-6
+                label(for="apellido") Apellido*
+                input.form-control#apellido(type="text", required)
+        
+           .form-row
+              .form-group.col-md-6
+                label(for='tipoDni') Tipo de DNI*:
+                select.form-control.tipoDniSelect(name='tipoDni' required)
+                  option(value="")
+               
+          
+              .form-group.col-md-6
+                label(for="documento") N° Documento*
+                input.form-control#documento(type="text", required)
+           .form-row
+              .form-group.col-md-6
+                label(for="fechaNacimiento") Fecha de Nacimiento*
+                input.form-control#fechaNacimiento(type="date", required)
+                
+              .form-group.col-md-6
+                label(for='sexo') Sexo*:
+                select.form-control.sexoSelect(name='sexo' required)
+                  option(value="")
+                 
+           .form-row
+              .form-group.col-md-6
+                label(for='obraSocial') Obra Social*:
+                select.form-control.obraSocialSelect(name='obraSocial' required)
+                  option(value="")
+                
+                 
+              .form-group.col-md-6
+                label(for='plan') Plan*:
+                select.form-control.planSelect(name='plan' required)
+                  option(value="")
+              
+           .form-group.mt-3
+              button.btn.btn-primary(type="submit") Guardar
+
+          
+    
+    .tab-pane.fade#tab2(role="tabpanel", aria-labelledby="tab2-tab")
+      .row.ml-5
+        .col-md-11.mt-4
+          h2 Modificar datos de Paciente
+          form(action='/modificarPaciente' method='POST')
+           .form-row
+              .form-group.col-md-6
+                label(for='tipoDni') Tipo de DNI*:
+                select.form-control.tipoDniSelect(name='tipoDni' required)
+                  option(value="")
+                 
+          
+              .form-group.col-md-6
+                label(for="documento") N° Documento*
+                input.form-control#documento(type="text", required)
+            
+           button.btn.btn-primary(type="submit") Buscar
+           .form-row
+              .form-group.col-md-6
+                label(for="nombre") Nombre*
+                input.form-control#nombre(type="text", required)
+              .form-group.col-md-6
+                label(for="apellido") Apellido*
+                input.form-control#apellido(type="text", required)
+        
+           
+           .form-row
+              .form-group.col-md-6
+                label(for="fechaNacimiento") Fecha de Nacimiento*
+                input.form-control#fechaNacimiento(type="date", required)
+              .form-group.col-md-6
+                label(for='sexo') Sexo*:
+                select.form-control.sexoSelect(name='sexo' required)
+                  option(value="")
+                
+           .form-row
+              .form-group.col-md-6
+                label(for='obraSocial') Obra Social*:
+                select.form-control.obraSocialSelect(name='obraSocial' required)
+                  option(value="")
+                
+              .form-group.col-md-6
+                label(for='plan') Plan*:
+                select.form-control.planSelect(name='plan' required)
+                  option(value="")
+                 
+          // contenedor flex para los botones
+          .d-flex.justify-content-between.mt-3
+          // Contenedor de botones
+          .row.mt-3.pb-3
+            .col
+              button.btn.btn-primary(type="submit") Guardar
+            .col.text-end
+              button.btn.btn-danger(type="button") Eliminar
+    
+
+
+    
+    //script(src="/js/formPaciente.js")

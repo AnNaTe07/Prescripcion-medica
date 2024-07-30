@@ -1,0 +1,177 @@
+extends layouts/layout
+
+block content
+  ul.nav.nav-tabs#myTab(role="tablist")
+    li.nav-item
+      a.nav-link.active(href="#tab1", id="tab1-tab", data-toggle="tab", role="tab", aria-controls="tab1", aria-selected="true") Registrar Medicamento
+    li.nav-item
+      a.nav-link(href="#tab2", id="tab2-tab", data-toggle="tab", role="tab", aria-controls="tab2", aria-selected="false") Modificar - Activar/desactivar Medicamento
+  
+  .tab-content#myTabContent
+    .tab-pane.fade.show.active#tab1(role="tabpanel", aria-labelledby="tab1-tab")
+      .row.ml-5
+        .col-md-11.mt-4.pt-5.pb-5
+          h2 Registro de Medicamentos
+          form(id="medicamentoForm",action="/medicamentos/registrarMedicamento", method="POST")
+            .form-row
+              .form-group.col-md-3
+                label(for="nombre_generico") Nombre Genérico
+              .form-group.col-md-12
+                input.form-control#nombre_genericof(type="text", name="nombre_generico", readonly)
+            h4 Componentes de Monodroga - Concentración
+            div.componentes-container  
+              .form-row.component
+                .form-group.col-md-3                      
+                  //label(for='componente_nombre') Monodroga*              
+                   input.form-control.monodroga-input#monodroga(type='text', name='componente_nombre', list="monodrogas", required=true)
+                   datalist#monodrogas
+                .componentes-concentracion.col-md-9
+                  .form-row
+                    .form-group.col-md-4
+                      //label(for='cantidad') Concentracion*
+                       input.form-control.cantidad#cantidad(type='text', name='cantidad', step='any', required=true)
+                    .form-group.col-md-4
+                      //label(for='unidad_id') Unidad de medida*
+                       select.form-control.unidad-select#unidad_id(name="unidad_id")
+                        option(value='') 
+                    .form-group.col-md-4.d-flex.align-items-end
+                      //button.btn.btn-primary.addConcentracion(type="button", onclick="addConcentracion(this)") Agregar Concentración
+                 
+                // contenedor flex para los botones
+            .d-flex.justify-content-between.mt-3
+             // Contenedor de botones
+            .row.mt-3.pb-5
+              .col
+                button.btn.btn-secondary.addComponente#addComponenteButton(type="button") Agregar Componente
+                p#errorComponente.error-message
+              .col
+                //button.btn.btn-danger(type="button", onclick="removeComponente(this)") Remover
+              
+            .form-row 
+              .form-group.col-md-6
+                label(for="nombre_comercial") Nombre Comercial
+                input.form-control#nombre_comercialf(type="text", name="nombre_comercial")
+    
+            
+            .form-row
+              .form-group.col-md-3
+                label(for="categoria") Categoría*
+                input.form-control.categoria-input#categoriaf(type="text", name="categoria",class="medicamento-input", list="categorias")
+                datalist#categorias
+            
+              .form-group.col-md-3
+                label(for="familia") Familia*
+                input.form-control.familia-input#familiaf(type="text", name="familia",class="medicamento-input", list="familias")  
+                datalist#familias
+                         
+              .form-group.col-md-3
+                label(for="forma_farmaceutica") Forma Farmacéutica*
+                input.form-control.forma_farmaceutica-input#forma_farmaceuticaf(type="text", name="forma_farmaceutica",  list="forma_farmaceuticas", class="medicamento-input", required)
+                datalist#forma_farmaceuticas(name="forma_farmaceutica")
+                  if formas && formas.length > 0  
+                    each forma in formas
+                      option(value=forma.id, data-id=forma.id)= forma.nombre 
+                div#errorForma.error-message
+              .form-group.col-md-3
+                label(for="presentacion") Presentación* 
+                input.form-control.presentacion-input#presentacionf(type="text", name="presentacion",list="presentacions",class="medicamento-input", required)
+                datalist#presentacions(name="presentacion")
+                  if presentaciones && presentaciones.length > 0
+                    each presentacion in presentaciones
+                      option(value=presentacion.nombre, data-id=presentacion.id)= presentacion.nombre
+                div#errorPresentacion.error-message
+            .row.pt-4                                
+              .col.text-end
+                button.btn.btn-primary(type="submit") Guardar
+
+
+    .tab-pane.fade#tab2(role="tabpanel", aria-labelledby="tab2-tab")
+      .row.ml-5
+        .col-md-11.mt-4
+          h2 Modificar - Activar/Desactivar Medicamento
+          form(action="/medicamentos/modificar/:id", method="POST")
+            .form-row
+              .form-group.col-md-12
+                label(for="nombre") Buscar por Nombre Genérico*
+                input.form-control#nombreM(type="text", name="nombre", list="nombreGenericoList", required)
+                datalist#nombreGenericoList
+              .form-group.col-md-4
+                button.btn.btn-secondary(type="button" onclick="limpiarForm()") Limpiar campos
+                input.form-control#medicamentoId(type="hidden", name="medicamentoId")
+            .form-row
+              h4 Componentes de Monodroga - Concentración
+              .componentes-container#componentesContainer.col-md-12
+                .form-row.component
+                  .form-group.col-md-3
+                    //label(for='componente_nombre') Monodroga
+                    //input.form-control(type='text', name='componente_nombre', required=true)
+                  .componentes-concentracion.col-md-9
+                    .form-row
+                      .form-group.col-md-4
+                        //label(for='cantidad') Concentración
+                        //input.form-control(type='number', name='cantidad', step='any', required=true)
+                      .form-group.col-md-4
+                        //label(for='unidad_id') Unidad de medida
+                        //select.form-control.unidad-select#unidad_id(name="unidad_id")
+                          option(value='')
+                        p#errorComponenteMod.error-message
+                    .concentraciones-extra
+                  //.d-flex.justify-content-between.mt-3
+                  //button.btn.btn-secondary.addComponente#addComponenteButton(type="button") Agregar Componente
+                  
+                   
+            
+            .form-row.componentes-container2  
+              .form-group.col-md-6
+                label(for="estado") Estado del medicamento
+                select.form-control#estado(name="estado", required)
+                  option(value='') Seleccione...
+                  option(value='Activo') Activo
+                  option(value='Inactivo') Inactivo
+              .form-group.col-md-6
+                label(for="nombre_comercial") Nombre Comercial
+                input.form-control#nombre_comercialm(type="text", name="nombre_comercial")
+            .form-row.componentes-container2 
+              .form-group.col-md-3
+                label(for="categoria") Categoría
+                input.form-control#categoriam(type="text", name="categoria",class="medicamento-input", list="categorias")
+                datalist#categorias
+            
+              .form-group.col-md-3
+                label(for="familia") Familia
+                input.form-control#familiam(type="text", name="familia", list="familias",class="medicamento-input")  
+                datalist#familias
+              .form-group.col-md-3
+                label(for="forma_farmaceutica") Forma Farmacéutica*
+                input.form-control#forma_farmaceuticam(type="text", name="forma_farmaceutica",list="forma_farmaceuticas",class="medicamento-input",required)
+                datalist#forma_farmaceuticas(name="forma_farmaceutica")
+                  option(value='') 
+                div#errorForma.error-message
+              .form-group.col-md-3
+                label(for="presentacion") Presentación* 
+                input.form-control#presentacionm(type="text", name="presentacion",list="presentacions",class="medicamento-input", required)
+                datalist#presentacions(name="presentacion")
+                  option(value='') 
+                div#errorPresentacion.error-message
+
+
+
+              // contenedor flex para los botones
+          .d-flex.justify-content-between.mt-3
+              // Contenedor de botones
+          .row.mt-3.pb-5
+              .col
+                button.btn.btn-primary(type="submit", onclick="actualizarMedicamento()") Modificar
+              .col.text-end
+                 //if medicamento && medicamento.id
+                   form(action=`/medicamentos/${medicamento.id}`, method="POST")
+                     input(type="hidden", name="_method", value="DELETE")
+                     button.btn.btn-danger(type="submit") Desactivar Medicamento
+
+  
+  script(src="/js/medicamentoRegistrarFront.js")  
+  script(src="/js/medicamentoModificarFront.js")
+  script(src="/js/mRegistroMedicamento.js")
+  script(src="/js/mModificarMedicamento.js")
+
+  

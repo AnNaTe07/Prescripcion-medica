@@ -1,0 +1,288 @@
+/* Estilo general */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f0f0f0;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden; /* Esto previene el desbordamiento horizontal */
+}
+
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.container-login {
+  max-width: 500px;
+  width: 90%;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+#emaillogin,
+#passwordlogin {
+  width: calc(100% - 20px); /* Resta el doble del padding del ancho total */
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+.labellogin {
+  margin-bottom: 10px;
+  padding: 0 15px;
+  display: block;
+  font-weight: bold;
+}
+#blogin {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  background-color: #599cb6;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#blogin button:hover {
+  background-color: #407a91;
+}
+
+.container {
+  width: 80%;
+  margin: 0 auto;
+}
+
+/* Estilo del encabezado */
+header {
+  background-color: #729cc9;
+  color: #fff;
+  text-align: center;
+}
+
+/* Estilo de la barra de navegación */
+nav {
+  background-color: #599cb6;
+  padding: 30px 0;
+  display: flex; /* Añadido para usar flexbox */
+  align-items: center;
+}
+.navbar-brand {
+  padding: 0; /* Elimina cualquier relleno (padding) del elemento .navbar-brand */
+  margin-left: 0;
+}
+.navbar-brand img {
+  max-height: 100%; /* Ajusta el tamaño máximo de la imagen al alto del contenedor */
+}
+nav ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+}
+
+nav ul li {
+  display: inline;
+  margin: 5px 10px;
+}
+
+nav ul li a {
+  color: #0f0f0f;
+  text-decoration: none;
+  font-size: 18px;
+}
+
+/* Estilo del pie de página */
+footer {
+  background-color: #599cb6;
+  color: #fff;
+  text-align: center;
+  padding: 10px 0;
+  bottom: 0;
+  width: 100%;
+}
+.user-info {
+  margin-top: 50px;
+  color: black;
+  display: grid;
+}
+
+.row.no-gutters {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+/* Asegura que la imagen no se expanda verticalmente */
+.user-info img {
+  max-width: 100%;
+  height: 80%;
+  display: block;
+  margin: 0 auto;
+}
+
+/* Elimina el margen no deseado en la imagen principal */
+.container-fluid {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.col-md-10.ml-sm-auto.col-lg-9.px-0 {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.img-inicio {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+.hidden {
+  display: none !important;
+}
+#verificar-container button {
+  margin-top: 32px; /* Ajusta este valor según sea necesario */
+}
+#guardarUsuario button {
+  margin-top: 32px;
+}
+.container {
+  width: 95%;
+  margin: 0 auto;
+  padding: 10px;
+}
+.form-prescripcion {
+  width: 95%;
+  margin: 0 auto;
+  padding: 10px;
+}
+.professional-info {
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+}
+
+.info-header {
+  text-align: center;
+  margin-bottom: 5px;
+}
+
+.info-body .row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0;
+}
+
+.info-body .col-md-6 {
+  flex: 0 0 48%;
+}
+
+.info-body .col-md-12 {
+  flex: 0 0 100%;
+}
+
+.error-message {
+  color: red;
+  font-size: 0.875em;
+}
+/* Estilo del modal de error */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header .btn-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+}
+
+.modal-footer .btn {
+  margin: 0;
+}
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0, 0, 0); /* Fallback color */
+  background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+}
+
+.modal.show {
+  display: block; /* Show the modal */
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+}
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.alert-success {
+  color: #155724;
+  background-color: #d4edda;
+  border-color: #c3e6cb;
+  padding: 10px;
+  margin-top: 10px;
+  margin-left: 30px;
+}
+
+.alert-danger {
+  color: #721c24;
+  background-color: #f8d7da;
+  border-color: #f5c6cb;
+  padding: 10px;
+  margin-top: 10px;
+  margin-left: 30px;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgb(0, 0, 0);
+  background-color: rgba(0, 0, 0, 0.4);
+}
+#persona_nombre,
+#profesion_nombre {
+  margin-right: 15px;
+  align-items: center;
+}
+#especialidad_nombre,
+#persona_apellido {
+  margin-right: 5px;
+  align-items: center;
+}

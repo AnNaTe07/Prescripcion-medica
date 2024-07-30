@@ -1,0 +1,78 @@
+.container
+  .section
+    h3 Prestación
+  
+    .prestacion-row.hidden
+      .form-row
+        .form-group.col-md-6
+          label(for="tipoPrestacion") Tipo de Prestación*
+          select.form-control.tipo_prestacionSelect(name="tipoPrestacion", id="tipoPrestacion", required)
+            option(value="") 
+          div#errorTipo.error-message
+
+        .form-group.col-md-6
+          label(for="nombrePrestacion") Nombre*  
+          input.form-control(type="text", name="nombresPrestacion", list="nombresPrestacion", id="nombrePrestacion")
+          datalist(id="nombresPrestacion")             
+            option(value="") 
+          div#errorNombre.error-message
+
+      .form-row
+        .form-group.col-md-6
+          label(for="posicion") Posición (opcional)
+          input.form-control(type="text", name="posicion", id="posiciones", readonly)
+
+      .form-row
+        .form-group.col-md-12
+          label(for="indicacion") Indicación*
+          input.form-control(type="text", name="indicacion", id="indicaciones", required, readonly)
+          div#errorIndicacion.error-message
+          
+      .form-row
+        .form-group.col-md-12
+          label(for="justificacion") Justificación*
+          input.form-control(type="text", name="justificacion", id="justificaciones", required)
+          div#errorJustificacion.error-message
+
+    // Contenedor de botones
+    .row.mt-3.pb-5
+      .col      
+        button.btn.btn-primary.add-prestacion(type="button") Agregar Prestacion
+      .col
+        button.btn.btn-danger.min-prestacion(type="button", style="display: none;") Remover
+      .col      
+        button.btn.btn-primary.confirmarPrestacion(type="button", style="display: none;") Confirmar
+   
+    // Contenedor de prestaciones
+    #contenedor-prestaciones(style="display: none;")
+    .d-flex.justify-content-between.mt-3
+      div#lista-prestaciones
+    .form-row
+          .form-group.col-md-6
+            p#mensajePrestacion(style="display:none;")
+
+    // Modal for notifications
+    .modal.fade#notificationModalPrestacion(tabindex="-1" role="dialog" aria-labelledby="notificationModalLabel" aria-hidden="true")
+      .modal-dialog(role="document")
+        .modal-content
+          .modal-header
+            h5.modal-title#notificationModalLabelPresentacion Notificacion
+            button.close(type="button" data-dismiss="modal" aria-label="Close")
+              span(aria-hidden="true") &times;
+          .modal-body
+            p#notificationMessage  
+    // Modal for notifications
+    .modal.fade#notificationModal(tabindex="-1" role="dialog" aria-labelledby="notificationModalLabel" aria-hidden="true")
+      .modal-dialog(role="document")
+        .modal-content
+          .modal-header
+            h5#notificationModalLabel.modal-title Notificación
+            button.close(type="button" data-dismiss="modal" aria-label="Close")
+              span(aria-hidden="true") &times;
+          .modal-body
+            p#notificationMessage
+          .modal-footer
+            button.btn.btn-secondary(type="button" data-dismiss="modal") Cerrar
+
+script(src='/js/prestacionFunciones.js')
+script(src='/js/prestacionFunciones2.js')

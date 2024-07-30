@@ -1,0 +1,19 @@
+nav.navbar.navbar-expand-lg.navbar-light(style="height: 12vh")
+  a.navbar-brand( href="/inicio" style="font-size: 30px") 
+    img(src="/images/medicina5.jpeg", width="210", height="100")
+  button.navbar-toggler(type="button", data-toggle="collapse", data-target="#navbarNav", aria-controls="navbarNav", aria-expanded="false", aria-label="Toggle navigation")
+    span.navbar-toggler-icon
+  .collapse.navbar-collapse#navbarNav
+    ul.navbar-nav.ml-auto
+      
+        a.nav-link.dropdown-toggle(href="#", id="navbarDropdown", role="button", data-toggle="dropdown", aria-haspopup="true", aria-expanded="false")
+         
+             img(src="/images/cara.png", class="img-fluid rounded-circle", width="60", height="60")
+          
+        .dropdown-menu.dropdown-menu-right(aria-labelledby="navbarDropdown")
+          a.dropdown-item(href="#") Perfil
+          a.dropdown-item(href="#") Configuración
+          .dropdown-divider
+          a.dropdown-item(href="/login/logout", id="logoutLink") Cerrar sesión
+
+          script(src="/js/login.js")

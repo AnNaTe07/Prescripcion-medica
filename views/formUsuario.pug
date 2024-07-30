@@ -1,0 +1,205 @@
+extends layouts/layout
+
+block content
+  .tab-content#myTabContent
+    .form-group
+      .row.ml-5
+        .col-md-11.mt-4
+          h2.mb-5 Registrar / Modificar / Eliminar Usuario
+          form.form-usuario(action='/gestionUsuario' method='POST')
+            h5.mb-4 Seleccione la acción a realizar*
+            .form-row.mb-4
+              .form-group.col-md-4
+                .form-check.ml-5.mb-3 
+                  input.form-check-input(type='radio' name='accion' id='registrar' value='registrar' checked)
+                  label.form-check-label(for='registrar') Registrar Usuario
+              .form-group.col-md-4
+                .form-check.ml-5.mb-3 
+                  input.form-check-input(type='radio' name='accion' id='modificar' value='modificar')
+                  label.form-check-label(for='modificar') Modificar Usuario
+              .form-group.col-md-4
+                .form-check.ml-5.mb-3 
+                  input.form-check-input(type='radio' name='accion' id='eliminar' value='eliminar')
+                  label.form-check-label(for='eliminar') Eliminar Usuario
+
+            // Campos comunes para todas las acciones
+            .form-row#camposComunes
+              .form-group.col-md-6
+                label(for='tipoDni') Tipo de DNI*:
+                select.form-control.tipoDniSelect#tipoDni(name='tipoDni', required)
+                  option(value='') Seleccione...
+                p.error-message#tipoDniError
+              .form-group.col-md-6
+                label(for="documento") N° Documento*
+                input.form-control#documento(type="number", name='documento', required)
+                p.error-message#documentoError
+            button.btn.btn-primary#buscarBtn(type="button") Buscar
+
+            // Campos para registrar o modificar usuario
+            .form-row#camposRegistroModificacion.hidden
+              .form-group.col-md-6
+                label(for="nombre") Nombre*
+                input.form-control#nombre(type="text", name='nombre', required)
+                p.error-message#nombreError
+              .form-group.col-md-6
+                label(for="apellido") Apellido*
+                input.form-control#apellido(type="text", name='apellido', required)
+                p.error-message#apellidoError
+              .form-group.col-md-6
+                label(for="email") Email*
+                input.form-control#email(type="email", name='email', required)
+                p.error-message#emailError
+              .form-group.col-md-6
+                label(for="telefono") Teléfono*
+                input.form-control#telefono(type="number", name='telefono', required)
+                p.error-message#telefonoError
+              .form-group.col-md-6#check-container
+                input#togglePassword(type="checkbox")
+                label(for="togglePassword") Cambiar Contraseña  
+              .form-group.col-md-6#contrasena-container
+                label(for="contrasena") Contraseña*
+                input.form-control#contrasena(type="password", name='contrasena', required)
+                p.error-message#contrasenaError
+              .form-group.col-md-6#confirmarContrasena-container
+                label(for="confirmarContrasena") Confirmar Contraseña*
+                input.form-control#confirmarContrasena(type="password", name='confirmarContrasena', required)
+                p.error-message#confirmarContrasenaError
+              .form-group.col-md-6
+                label(for="rolUsuario") Rol de usuario*
+                select.form-control#rolUsuario(name="rolUsuario", required)
+                  option(value='') Seleccione...
+                   option(value='administrador') Administrador
+                   option(value='profesional') Profesional
+                   option(value='admin_profesional') Administador/Profesional                  
+                p.error-message#rolUsuarioError
+
+              .form-group.col-md-6#caducidad-container2
+                label(for="caducidad2") Fecha de Caducidad*
+                input.form-control#caducidad2(type="date", name="caducidad2", required)
+                p.error-message#caducidadError2
+              .form-group.col-md-6#estado-container
+                label(for="estado") Estado*
+                input.form-control#estado(name="estado", readonly,required)                          
+                p.error-message#estadoError
+              .form-group.col-md-6#estado-container2
+                label(for="estado2") Estado*
+                select.form-control#estado2(name="estado", required)
+                  option(value='') Seleccione...
+                  option(value='Activo') Activo
+                  option(value='Inactivo') Inactivo                
+                p.error-message#errorEstado2
+        
+            // Campos adicionales para rol de profesional
+            .form-row#camposProfesional.hidden
+              .form-group.col-md-6.hidden#pais-container
+                label(for="pais") Nacionalidad*
+                input.form-control#pais(type="text", name="pais", list="paisList", required)
+                datalist#paisList
+                p.error-message#paisError
+             
+              .form-group.col-md-6.hidden#matricula-container
+                label(for="matricula") Matrícula*
+                input.form-control#matricula(type="text", name="matricula", required)
+                p.error-message#matriculaError  
+
+              .form-group.col-md-6.hidden#profesion-container
+                label(for="profesion") Profesión*
+                select.form-control#profesion(name="profesion", required)
+                  option(value='') Seleccione...
+                p.error-message#profesionError
+            
+              .form-group.col-md-6.hidden#especialidad-container
+                label(for="especialidad") Especialidad*
+                input.form-control#especialidad(type="text", name="especialidad",, list="especialidadList" required)
+                datalist#especialidadList
+                p.error-message#especialidadError
+
+              .form-group.col.hidden#verificar-container                       
+                button.btn.btn-primary#verificarBtn(type="button") Verificar REFEPS 
+
+              .form-group.col-md-6.hidden#refeps-container
+                label(for="refeps") ID REFEPS*
+                input.form-control#refeps(type="text", name="refeps", required,readonly)
+                p.error-message#refepsError
+              
+           
+              .form-group.col-md-6.hidden
+                label(for="calle") Calle*
+                input.form-control#calle(type="text", name='calle', required)
+                p.error-message#calleError
+              .form-group.col-md-6.hidden
+                label(for="numero") Número*
+                input.form-control#numero(type="text", name='numero', required)
+                p.error-message#numeroError
+              .form-group.col-md-6.hidden
+                label(for="piso") Piso
+                input.form-control#piso(type="text", name='piso', required)
+                p.error-message#pisoError
+              .form-group.col-md-6.hidden
+                label(for="depto") Departamento
+                input.form-control#depto(type="text", name='depto', required)
+                p.error-message#deptoError
+              .form-group.col-md-6.hidden
+                label(for="provincia") Provincia*
+                input.form-control#provincia(type="text", name='provincia',list="provinciaList", required)
+                datalist#provinciaList
+                p.error-message#provinciaError
+              .form-group.col-md-6.hidden
+                label(for="localidad") Localidad*
+                input.form-control#localidad(type="text", name='localidad',list="localidadList", required)
+                datalist#localidadList
+                p.error-message#localidadError
+              .form-group.col-md-6.hidden
+                label(for="cp") Código Postal *
+                input.form-control#cp(type="text", name='cp',list="cpList", required)
+                datalist#cpList
+                p.error-message#cpError  
+                
+              .form-group.col-md-6#caducidad-container.hidden
+                label(for="caducidad") Fecha de Caducidad*
+                input.form-control#caducidad(type="date", name="caducidad", required)
+                p.error-message#caducidadError
+
+              
+              
+            // contenedor flex para los botones
+          .d-flex.justify-content-between.mt-3
+            // Contenedor de botones
+          
+            .col.md-6
+              button.btn.btn-primary#registroBtn(type="button",style="display:none;") Registrar
+            .col.md-6
+              button.btn.btn-primary#modificarBtn(type="submit",style="display:none;") Modificar
+            .col.text-end
+              button.btn.btn-danger#eliminarBtn(type="button",style="display:none;") Eliminar
+
+      //- Modal
+      #messageModal.modal
+        .modal-content
+          span.close &times;
+          p.modal-message    
+      // Modal
+      #messageModal.modal
+        .modal-content
+          span.close &times;
+          p.modal-message
+      .form-row
+        .form-group.col-md-6
+          p#mensajeUsuario.hidden(style="display:none;")
+        
+        // Modal for notifications
+        .modal.fade#notificationModalUsuario(tabindex="-1" role="dialog" aria-labelledby="notificationModalLabel" aria-hidden="true")
+          .modal-dialog(role="document")
+            .modal-content
+              .modal-header
+                h5.modal-title#notificationModalLabelUsuario Notificación
+                button.close(type="button" data-dismiss="modal" aria-label="Close")
+                  span(aria-hidden="true") &times;
+              .modal-body
+                p#notificationMessageUsuario  
+        
+            
+    script(src="/js/usuario-frontend.js")
+    script(src="/js/usuario-backend.js")
+    script(src="/js/usuarioModificar.js")
+    script(src="/js/usuarioEliminar.js")

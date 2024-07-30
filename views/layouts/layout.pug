@@ -1,0 +1,40 @@
+doctype html
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title Sistema de prescripciones médicas
+    link(rel="stylesheet", href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css")
+    link(rel="stylesheet", href="/css/style.css")
+    link(rel="icon", type="image/png", href="/images/medicina.png")
+   
+  body
+    // Menú de navegación superior
+    include ../partials/header
+
+    .container-fluid
+      .row.no-gutters
+        include ../partials/sidebar
+
+        .col-md-10.col-lg-10.px-0
+          block content
+
+    include ../partials/footer
+    
+  
+
+    script(src="https://code.jquery.com/jquery-3.6.0.min.js")
+    script(src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js")
+    script(src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js")
+    
+    script(src="/app.js").
+    
+    script(src="/js/auxiliarFetch.js")
+    script(src="/js/auxiliar.js")
+    script(src="/js/profesional.js")
+    
+  
+    //script(src="/js/formMedicamento.js")
+    //script(src="/js/profesional.js")
+    //script(src="/js/formPaciente.js")
+      

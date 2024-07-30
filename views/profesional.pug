@@ -1,0 +1,37 @@
+//- professional.pug
+.container
+  .professional-info
+    .info-header
+      //h3 Información del Profesional
+    .info-body
+      .row
+         h1 Datos del Profesional
+    ul
+      li Nombre: #{profesional.persona_nombre}
+      li Apellido: #{profesional.persona_apellido}
+      li Profesión: #{profesional.profesion_nombre}
+      li Especialidad: #{profesional.especialidad_nombre}
+      li Matrícula: #{profesional.matricula}
+      li Email: #{profesional.email}
+      li Teléfono: #{profesional.telefono}
+      li Domicilio: #{profesional.calle} #{profesional.numero}, #{profesional.piso} #{profesional.departamento}
+      li Código Postal: #{profesional.codigo_postal}
+        .col-md-3
+          h4 #{profesional.persona_nombre} #{profesional.persona_apellido}
+        .col-md-3
+          //p Documento: #{profesional.documento}
+      .row
+        .col-md-6
+          p #{profesional.profesion_nombre} #{profesional.especialidad_nombres} 
+        .col-md-3
+         p #{profesional.usuario_email}
+      .row
+        .col-md-3
+          p #{profesional.matricula}
+        .col-md-3
+          p Teléfono: #{profesional.telefono}
+      .row
+        .col-md-3
+          p REFEPS #{profesional.id_REFEPS}
+        .col-md-7
+          p #{profesional.domicilio} (c.p.:#{codigo_postal})

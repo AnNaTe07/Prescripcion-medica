@@ -1,0 +1,96 @@
+//- patient.pug
+.container
+  .patient-info
+    .info-header
+    h3 Información del Paciente
+    .info-body
+                  
+       
+      .form-row
+        .form-group.col-md-6
+          label(for='tipoDni') Tipo de DNI*:
+          select.form-control.tipoDniSelect#dni(name='tipoDni' required)
+            option(value="")
+         
+          div#errorDni.error-message
+        .form-group.col-md-6
+          label(for="documento") N° Documento*
+          input.form-control#documento(type="number", name="documento", required)
+          div#errorDocumento.error-message
+      
+        .col
+          button.btn.btn-primary(type="button" id="buscarPacienteBtn") Buscar Paciente
+        .form-group.col-md-6
+          div#errorDocumento.error-message
+            p#mensaje(style="display:none;")
+
+      form.container-paciente(id="datosPacienteForm" style="display:none;")
+        
+            
+        .form-row
+          .form-group.col-md-6
+            label(for="nombre") Nombre*
+            input.form-control#nombre(type="text", name="nombre", required, readonly)
+          .form-group.col-md-6
+            label(for="apellido") Apellido*
+            input.form-control#apellido(type="text", name="apellido", required, readonly)
+          
+        .form-row
+          .form-group.col-md-6
+            label(for="fecha_nacimiento") Fecha de Nacimiento*
+            input.form-control#fecha_nacimiento(type="date", name="fecha_nacimiento", required, readonly)
+            
+          .form-group.col-md-6
+            label(for='sexo') Sexo*:
+            input.form-control#sexoInput(type="text", name="sexoInput", readonly)
+            select.form-control.sexoSelect#sexo(name='sexo', required)
+              option(value="")             
+             
+        .form-row
+          .form-group.col-md-6
+            label(for="email") Email*:
+            input.form-control#email(type="text", name="email", readonly)
+          .form-group.col-md-6
+            label(for="telefono") Teléfono*:
+            input.form-control#telefono(type="text", name="telefono", readonly)
+        
+        .form-row
+          .form-group.col-md-6
+            label(for='obraSocial') Obra Social*:
+            input.form-control#obraSocialInput(type="text", name="obraSocialInput", readonly)
+            select.form-control.obraSocialSelect#obraSocial(name='obraSocial', required)
+              option(value="")
+             
+          .form-group.col-md-6
+            label(for='plan') Plan*:
+            input.form-control#planInput(type="text", name="planInput", readonly)
+            select.form-control.planSelect#planPaciente(name='plan' required)
+              option(value="")
+            
+
+                
+        .form-row          
+          .form-group.col-md-6
+            button.btn.btn-primary(type="button" id="modificarBtn") Modificar
+        .form-row
+          .form-group.col-md-6
+            button.btn.btn-primary(type="button", id="registrarPacienteBtn", style="display:none") Registrar Paciente
+        .form-group.col-md-6
+            button.btn.btn-primary(type="button", id="modificarPacienteBtn", style="display:none") Modificar Paciente 
+        .form-row
+          .form-group.col-md-6
+            p#mensajeModificar(style="display:none;")
+
+      // Modal for notifications
+      
+    .modal.fade#notificationModalPaciente(tabindex="-1" role="dialog" aria-labelledby="notificationModalLabel" aria-hidden="true")
+      .modal-dialog(role="document")
+        .modal-content
+          .modal-header
+            h5.modal-title#notificationModalLabel Notification
+            button.close(type="button" data-dismiss="modal" aria-label="Close")
+              span(aria-hidden="true") &times;
+          .modal-body
+            p#notificationMessage  
+
+    script(src='/js/pacienteFunciones.js')
