@@ -554,8 +554,17 @@ document.addEventListener("DOMContentLoaded", function () {
             mostrarError(refeps, data.message);
           }
         } catch (error) {
-          limpiarErrores();
-          mostrarError(refeps, "Error al verificar en REFEPS");
+          showNotification(
+            "Error al verificar en REFEPS, persona no registrada",
+            false
+          );
+          limpiarCampos();
+          limpiarCamposProfesional();
+          document.querySelector("#registroBtn").style.display = "none";
+          camposRegistroModificacion.classList.add("hidden");
+          camposProfesional.classList.add("hidden");
+          //limpiarErrores();
+          //mostrarError(refeps, "Error al verificar en REFEPS");
         }
       }
       document

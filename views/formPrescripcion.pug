@@ -17,13 +17,23 @@ block content
             // Sección paciente
             .section
               include paciente
-            
+            .section
+                .form-row
+                  .form-group.col-md-4
+                div
+                  input.form-check-input(type="checkbox", id="prescrip")
+                  label(for="prescrip") Mostrar Prescripciones Anteriores
+                div#prescripcionesAnteriores.hidden
+
+
             // Sección medicamento
             .section
               include medicamento
+              div#errorMedicamento
             // Sección prestacion
             .section
               include prestacion 
+              div#errorPrestacion
              
                 input(type="hidden", id="profesionalId", name="profesionalId", value=profesionalId)
               
@@ -32,13 +42,13 @@ block content
                   label(for='obraSocial') Obra Social*:
                   select.form-control.obraSocialSelect#obraSocialP(name='obraSocial', required)                  
                     option(value="")
-                    div#errorPresc1.error-message
+                  div#errorPresc1.error-message
 
                 .form-group.col-md-6
                   label(for='plan') Plan*:
                   select.form-control.planSelect#planPrescripcion(name='plan' required)
                     option(value="")
-                    div#errorPresc2.error-message
+                  div#errorPresc2.error-message
   
             
                 .form-group.col-md-12
@@ -68,5 +78,7 @@ block content
                       p#mensajePrescripcion(style="display:none;")       
 
     script(src="/js/profesional.js")
+    
     script(src="/js/prescripcion.js")
+    script(src="/js/prescripcionesAnteriores.js")
 

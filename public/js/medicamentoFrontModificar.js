@@ -8,10 +8,10 @@ document.addEventListener("DOMContentLoaded", () => {
   function limpiarForm() {
     document.getElementById("medicamentoForm").reset();
     // Limpiar el contenedor de componentes para el modo de modificación
-    componentesContainerModificar.innerHTML = "";
+    componentesContainerModificar.classList.add("hidden");
 
     // Limpiar el contenedor de componentes para el modo de registro
-    componentesContainerRegistro.innerHTML = "";
+    //componentesContainerRegistro.innerHTML = "";
     componentesContainerModificar.classList.add("hidden");
     if (inputBuscar) {
       inputBuscar.value = "";
@@ -218,6 +218,8 @@ document.addEventListener("DOMContentLoaded", () => {
               throw new Error("No se encontró el medicamento");
             }
             // Actualizar los campos del formulario
+
+            componentesContainerModificar.classList.remove("hidden");
             document.getElementById("nombre").value =
               medicamento.nombre_generico;
             document.getElementById("medicamentoId").value = medicamento.id;

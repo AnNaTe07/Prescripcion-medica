@@ -85,6 +85,7 @@ document.addEventListener("DOMContentLoaded", () => {
           console.log("ID del paciente:", window.pacienteId);
           window.paciente = data;
           console.log("paciente:", window.paciente);
+          console.log("paciente:", window.paciente.paciente_email);
           modificarBtn.style.display = "inline";
           registrarPacienteBtn.style.display = "none";
           modificarPacienteBtn.style.display = "none";

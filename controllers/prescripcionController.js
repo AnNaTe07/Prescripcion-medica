@@ -1,5 +1,5 @@
 const pool = require("../config/database");
-
+const nodemailer = require("nodemailer");
 const { generarPDF } = require("../PDF/generarPDF");
 
 const crearPrescripcion = async (req, res) => {
@@ -14,6 +14,8 @@ const crearPrescripcion = async (req, res) => {
     profesional,
     paciente,
     diagnostico,
+    enviarEmail,
+    pacienteEmail,
   } = req.body;
 
   const connection = await pool.getConnection();
@@ -21,7 +23,7 @@ const crearPrescripcion = async (req, res) => {
   try {
     await connection.beginTransaction();
 
-    // Crear la prescripción con la fecha actual usando NOW()
+    // Creo la prescripción con la fecha actual usando NOW()
     const queryPrescripcion = `
       INSERT INTO prescripcion (idREFEPS, paciente_id, fecha, diagnostico_id, plan_id, vigencia) 
       VALUES (?, ?, NOW(), ?, ?, ?)
@@ -35,7 +37,7 @@ const crearPrescripcion = async (req, res) => {
     ]);
     const prescripcionId = prescripcionResult.insertId;
 
-    // Insertar medicamentos
+    // Inserto medicamentos
     for (let medicamento of medicamentos) {
       const {
         medicamentoId,
@@ -50,7 +52,7 @@ const crearPrescripcion = async (req, res) => {
       );
       const duracion_id = await obtenerIdONuevoRegistro("duracion", duracion);
 
-      // Comprobar si la administración ya está registrada, sino, insertarla
+      // Compruebo si la administración ya está registrada, sino, se insertar
       await obtenerIdONuevoRegistro(
         "administracion",
         null,
@@ -72,7 +74,7 @@ const crearPrescripcion = async (req, res) => {
       ]);
     }
 
-    // Insertar prestaciones
+    // Inserto prestaciones
     for (let prestacion of prestaciones) {
       const { id } = prestacion;
       const queryPrescripcionPrestacion = `
@@ -90,7 +92,7 @@ const crearPrescripcion = async (req, res) => {
       profesional,
       paciente,
       diagnostico,
-      fechaPrescripcion: new Date().toISOString().split("T")[0], // Obtén la fecha actual en formato YYYY-MM-DD
+      fechaPrescripcion: new Date().toISOString().split("T")[0], //fecha actual en formato YYYY-MM-DD
       vigencia,
       medicamentos,
       prestaciones,
@@ -98,6 +100,43 @@ const crearPrescripcion = async (req, res) => {
 
     await connection.commit();
 
+    if (enviarEmail) {
+      if (!pacienteEmail) {
+        throw new Error("Email del paciente no proporcionado");
+      }
+      // Configuro el transporte de correo electrónico (utilizando nodemailer)
+      const transporter = nodemailer.createTransport({
+        service: "outlook",
+        auth: {
+          user: "andreanataliatello@outlook.com",
+          pass: "Amorina11",
+          //user: "usuarioprueba77@hotmail.com",
+          //pass: "77usuarioprueba",
+        },
+      });
+      console.log("PDF Path:", pacienteEmail);
+      // Configuro las opciones del correo electrónico
+      const mailOptions = {
+        from: "andreanataliatello@outlook.com",
+        to: pacienteEmail, //correo electrónico del paciente
+        subject: "Prescripción Médica",
+        text: "Adjunto encontrará su prescripción médica.",
+        attachments: [
+          {
+            path: pdfPath,
+          },
+        ],
+      };
+
+      // Envío el correo electrónico
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.error("Error al enviar el correo electrónico:", error);
+        } else {
+          console.log("Correo electrónico enviado:", info.response);
+        }
+      });
+    }
     res.status(201).json({
       message: "Prescripción creada exitosamente y PDF generado.",
       pdfPath: "../PDF/prescripcion.pdf", //  ruta del PDF al cliente
@@ -180,7 +219,160 @@ const buscarDiagnosticos = async (req, res, next) => {
     next(error);
   }
 };
+const buildInClause = (array) => {
+  return array.map(() => "?").join(",");
+};
+const getPrescripcionesAnteriores = async (req, res) => {
+  const { paciente_id } = req.params;
+  const { idREFEPS } = req.body;
+  console.log("IdREFEPS:", idREFEPS);
+  console.log("PacienteId:", paciente_id);
+  try {
+    // Consulta para obtener prescripciones
+    const prescripcionQuery = `
+      SELECT 
+        p.id AS prescripcion_id,
+        p.fecha,
+        d.descripcion AS nombre_diagnostico
+      FROM 
+        prescripcion p
+        LEFT JOIN diagnostico d ON p.diagnostico_id = d.id
+      WHERE 
+        p.idREFEPS = ? AND p.paciente_id = ?
+      ORDER BY 
+        p.fecha DESC;
+    `;
+    const [prescripciones] = await pool.execute(prescripcionQuery, [
+      idREFEPS,
+      paciente_id,
+    ]);
+
+    if (prescripciones.length === 0) {
+      return res
+        .status(404)
+        .json({ error: "No se encontraron prescripciones" });
+    }
+
+    // Obtengo una lista de IDs de prescripción
+    const prescripcionIds = prescripciones.map((p) => p.prescripcion_id);
+
+    if (prescripcionIds.length === 0) {
+      return res
+        .status(404)
+        .json({ error: "No se encontraron prescripciones con los IDs dados" });
+    }
+
+    // Consulta para obtener medicamentos
+    const medicamentosQuery = `
+      SELECT 
+        pm.prescripcion_id,
+        m.nombre_generico AS nombre_medicamento,
+        ds.nombre AS nombre_dosis,
+        it.nombre AS nombre_intervalo_tiempo,
+        du.nombre AS nombre_duracion
+      FROM 
+        prescripcion_medicamento pm
+        LEFT JOIN medicamento m ON pm.medicamento_id = m.id
+        LEFT JOIN dosis ds ON pm.dosis_id = ds.id
+        LEFT JOIN intervalo_tiempo it ON pm.intervalo_tiempo_id = it.id
+        LEFT JOIN duracion du ON pm.duracion_id = du.id
+      WHERE 
+        pm.prescripcion_id IN (${buildInClause(prescripcionIds)})
+      ORDER BY 
+        pm.prescripcion_id;
+    `;
+    const [medicamentos] = await pool.execute(
+      medicamentosQuery,
+      prescripcionIds
+    );
+
+    // Consulta para obtener prestaciones
+    const prestacionesQuery = `
+      SELECT 
+        pr.prescripcion_id,
+        pr.prestacion_id,
+        pt.nombre AS nombre_prestacion,
+        pr.observacion
+      FROM 
+        prescripcion_prestacion pr
+        LEFT JOIN prestacion pt ON pr.prestacion_id = pt.id
+      WHERE 
+        pr.prescripcion_id IN (${buildInClause(prescripcionIds)})
+      ORDER BY 
+        pr.prescripcion_id;
+    `;
+    const [prestaciones] = await pool.execute(
+      prestacionesQuery,
+      prescripcionIds
+    );
+    const formatearFecha = (fecha) => {
+      const date = new Date(fecha);
+      return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
+    };
+
+    const resultadosAgrupados = {};
+    console.log("Prescripciones225:", prescripciones);
+    prescripciones.forEach((prescripcion) => {
+      resultadosAgrupados[prescripcion.prescripcion_id] = {
+        fecha: formatearFecha(prescripcion.fecha),
+        diagnostico: prescripcion.nombre_diagnostico,
+        medicamentos: [],
+        prestaciones: [],
+      };
+    });
+
+    medicamentos.forEach((medicamento) => {
+      if (resultadosAgrupados[medicamento.prescripcion_id]) {
+        resultadosAgrupados[medicamento.prescripcion_id].medicamentos.push({
+          nombre_generico: medicamento.nombre_medicamento,
+          dosis: medicamento.nombre_dosis,
+          intervalo_tiempo: medicamento.nombre_intervalo_tiempo,
+          duracion: medicamento.nombre_duracion,
+        });
+      }
+    });
+
+    prestaciones.forEach((prestacion) => {
+      if (resultadosAgrupados[prestacion.prescripcion_id]) {
+        resultadosAgrupados[prestacion.prescripcion_id].prestaciones.push({
+          prestacion_id: prestacion.prestacion_id,
+          nombre_prestacion: prestacion.nombre_prestacion,
+          observacion: prestacion.observacion || "N/A",
+        });
+      }
+    });
+
+    res.status(200).json(resultadosAgrupados);
+  } catch (error) {
+    console.error("Error al obtener las prescripciones anteriores:", error);
+    res
+      .status(500)
+      .json({ error: "Error al obtener las prescripciones anteriores" });
+  }
+};
+//para agregar la observacion
+const modificarPrestacion = async (req, res) => {
+  const { prescripcionId, prestacionId } = req.params;
+  const { observacion } = req.body;
+  console.log("prescripcionId:", prescripcionId);
+  console.log("prestacionId:", prestacionId);
+  try {
+    const [result] = await pool.query(
+      "UPDATE prescripcion_prestacion SET observacion = ? WHERE prescripcion_id = ? AND prestacion_id = ?",
+      [observacion, prescripcionId, prestacionId]
+    );
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: "Prestación no encontrada" });
+    }
+    res.status(200).json({ message: "Observación actualizada correctamente" });
+  } catch (error) {
+    console.error("Error al actualizar la observación:", error);
+    res.status(500).json({ error: "Error al actualizar la observación" });
+  }
+};
 module.exports = {
   crearPrescripcion,
   buscarDiagnosticos,
+  getPrescripcionesAnteriores,
+  modificarPrestacion,
 };

@@ -54,7 +54,7 @@ function actualizarFormulario() {
     btnModificar.style.display = "block";
     estadoSelect.disabled = false;
     inputBuscar.classList.remove("hidden");
-    componentesContainerModificar.classList.remove("hidden");
+    //componentesContainerModificar.classList.remove("hidden");
     componentesContainerRegistro.classList.add("hidden");
     addComponenteButton.classList.add("hidden");
   } else {

@@ -40,7 +40,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Validar campos del formulario
     const esValido = validarYEnviarFormulario();
-    // Si no es válido, detener el registro
+    // Si no es válido, detengo el registro
     if (!esValido) {
       return;
     }

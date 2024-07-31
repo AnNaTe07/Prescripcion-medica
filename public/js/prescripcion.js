@@ -5,16 +5,19 @@ window.idRefeps = null;
 window.profesionalId = null;
 let diagnosticoId = null;
 let planId = null;
-//const { pdf } = window.pdf;
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", () => {
   // Evento click para el botón de guardar prescripción
   const diagnosticosInput = document.getElementById("diagnosticos");
   const diagnosticosDatalist = document.getElementById("listaDiagnosticos");
   const form = document.querySelector("#formulario");
   const contenedorPaciente = document.querySelector(".container-paciente");
+  const errorPresc1 = document.getElementById("errorPresc1");
+  const errorPresc2 = document.getElementById("errorPresc2");
+  const errorPresc3 = document.getElementById("errorPresc3");
+  console.log("Error 3:", errorPresc3);
   let diagnostico = null;
   let pdfUrl = null;
-  // Cargar diagnósticos desde el servidor
+  // Cargo diagnósticos desde el servidor
   fetch("/prescripcion/diagnosticos")
     .then((response) => response.json())
     .then((data) => {
@@ -27,12 +30,12 @@ document.addEventListener("DOMContentLoaded", function () {
     })
     .catch((error) => console.error("Error obteniendo diagnósticos:", error));
 
-  // Capturar el ID del diagnóstico seleccionado
+  // Capturo el ID del diagnóstico seleccionado
   diagnosticosInput.addEventListener("input", function () {
     diagnostico = this.value;
     diagnosticoId = null;
 
-    // Buscar en las opciones del datalist
+    // Busco en las opciones del datalist
     Array.from(diagnosticosDatalist.options).forEach((option) => {
       if (option.value === diagnostico) {
         diagnosticoId = option.dataset.id;
@@ -48,44 +51,46 @@ document.addEventListener("DOMContentLoaded", function () {
   document
     .getElementById("guardar")
     .addEventListener("click", async function () {
-      console.log(window.datosProfesional);
-      console.log(window.paciente);
-      /*     const enviarEmail = document.getElementById("enviarEmail").checked;
+      //console.log(window.datosProfesional);
+      //console.log(window.paciente);
+      //console.log(window.paciente.paciente_email);
+      const obraSocialSelect = document.querySelector("#obraSocialP");
+      const planSelect = document.getElementById("planPrescripcion");
+      const diagnostico = diagnosticosInput.value.trim();
+      const obraSocial = obraSocialSelect.value.trim();
+      const plan = planSelect.value.trim();
+      const enviarEmail = document.getElementById("enviarEmail").checked;
       const imprimir = document.getElementById("imprimir").checked;
 
-      const obraSocial = document.getElementById("obraSocialpres").value;
-      const plan = document.getElementById("plans").value;
-      const diagnostico = document.getElementById("diagnosticos").value;
-
-      //generarPDF();
-      if (enviarEmail) {
-        const email = "toony1717@hotmail.com";
-        const pdfData = doc.output("dataurlstring");
-        try {
-          const response = await fetch("/sendEmail", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ email, pdfData }),
-          });
-          const data = await response.json();
-          alert("Email enviado exitosamente");
-        } catch (error) {
-          console.error("Error al enviar el email:", error);
-        }
+      // Validar campos vacíos
+      let valid = true;
+      if (!obraSocial) {
+        //mostrarError(obraSocialP, "Obra Social es requerida.");
+        document.getElementById("errorPresc1").textContent =
+          "Obra Social es requerida.";
+        valid = false;
+      } else {
+        errorPresc1.innerHTML = "";
+      }
+      if (!plan) {
+        errorPresc2.innerHTML = "Plan es requerido.";
+        valid = false;
+      } else {
+        errorPresc2.innerHTML = "";
+      }
+      if (!diagnostico) {
+        errorPresc3.innerHTML = "Diagnóstico es requerido.";
+        valid = false;
+      } else {
+        errorPresc3.innerHTML = "";
       }
 
-      if (imprimir) {
-        doc.autoPrint();
-        window.open(doc.output("bloburl"), "_blank");
-      } */
-      //console.log("ID del diagnóstico seleccionado:", diagnosticoId);
+      if (!valid) {
+        return;
+      }
 
-      // console.log(profesionalId);
-      //console.log(diagnosticoId);
-      const plan = document.getElementById("planPrescripcion").value;
       console.log(plan);
+
       const vigencia = obtenerFechaVigencia();
 
       // Objeto de prescripción
@@ -100,10 +105,16 @@ document.addEventListener("DOMContentLoaded", function () {
         profesional: window.datosProfesional,
         paciente: window.paciente,
         diagnostico,
+        //enviarEmail,
+        //pacienteEmail: window.paciente.paciente_email,
       };
-
+      // Si el checkbox está marcado, envío la información del email
+      if (enviarEmail) {
+        prescripcion.enviarEmail = true;
+        prescripcion.pacienteEmail = window.paciente.paciente_email;
+      }
       try {
-        // Enviar la solicitud para crear la prescripción
+        // Envio la solicitud para crear la prescripción
         const response = await fetch("/prescripcion/crear", {
           method: "POST",
           headers: {
@@ -114,7 +125,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (!response.ok) {
           showNotification("Error al crear la prescripción", false);
         }
-        // Manejar la respuesta del servidor
+        // respuesta del servidor
         const result = await response.json();
         if (result.pdfPath) {
           pdfUrl = `${window.location.origin}/${result.pdfPath}`;
@@ -127,7 +138,7 @@ document.addEventListener("DOMContentLoaded", function () {
         mostrarPrestaciones();
         limpiarCamposFormulario();
         if (imprimir) {
-          // Imprimir el PDF
+          // Imprimo el PDF
           window.open(pdfUrl, "_blank");
         }
         showNotification("Prescripción creada exitosamente", true);
@@ -164,7 +175,7 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("diagnosticos").value = "";
     contenedorPaciente.classList.add("hidden");
     document.querySelector(".container-paciente").classList.add("hidden");
-    const checkboxes = form.querySelectorAll("input[type='checkbox']");
-    checkboxes.forEach((checkbox) => (checkbox.checked = false));
+    document.getElementById("enviarEmail").checked = false;
+    document.getElementById("imprimir").checked = false;
   }
 });

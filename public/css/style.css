@@ -286,3 +286,10 @@ footer {
   margin-right: 5px;
   align-items: center;
 }
+#prescripcionesAnteriores {
+  max-height: 400px; /* Ajustar altura */
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin-bottom: 20px;
+}
