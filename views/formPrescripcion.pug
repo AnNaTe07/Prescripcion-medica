@@ -17,6 +17,8 @@ block content
             // Sección paciente
             .section
               include paciente
+
+            div#errorPaciente.error-message  
             .section
                 .form-row
                   .form-group.col-md-4
@@ -29,11 +31,13 @@ block content
             // Sección medicamento
             .section
               include medicamento
-              div#errorMedicamento
+              div#errorMedicamento.error-message
             // Sección prestacion
             .section
               include prestacion 
-              div#errorPrestacion
+              div#errorPrestacion.error-message
+
+
              
                 input(type="hidden", id="profesionalId", name="profesionalId", value=profesionalId)
               

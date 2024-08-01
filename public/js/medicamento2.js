@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   botonConfirmar.addEventListener("click", function () {
     agregarMedicamento();
-    //ocultarCampos();
+    ocultarCampos();
   });
 
   botonRemover.addEventListener("click", function () {
@@ -17,7 +17,34 @@ document.addEventListener("DOMContentLoaded", function () {
     botonConfirmar.style.display = "none";
     botonAgregar.style.display = "inline-block";
   });
-
+  // limpio error nombre
+  document.getElementById("nomgen").addEventListener("change", function () {
+    const errorNomgen = document.getElementById("errorNomgen");
+    if (errorNomgen) {
+      errorNomgen.textContent = "";
+    }
+  });
+  // limpio error dosis
+  document.getElementById("dosis").addEventListener("change", function () {
+    const errorDosis = document.getElementById("errorDosis");
+    if (errorDosis) {
+      errorDosis.textContent = "";
+    }
+  });
+  // limpio error tiempo
+  document.getElementById("tiempo").addEventListener("change", function () {
+    const errorTiempo = document.getElementById("errorTiempo");
+    if (errorTiempo) {
+      errorTiempo.textContent = "";
+    }
+  });
+  // limpio error duracion
+  document.getElementById("duracion").addEventListener("change", function () {
+    const errorDuracion = document.getElementById("errorDuracion");
+    if (errorDuracion) {
+      errorDuracion.textContent = "";
+    }
+  });
   function mostrarMedicamentos() {
     contenedorMedicamento.innerHTML = "";
 
@@ -68,13 +95,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const tiempo = document.getElementById("tiempo").value.trim();
     const duracion = document.getElementById("duracion").value.trim();
 
-    const isValid = validarCampos(
-      nombreG,
-      nombreComercial,
-      dosis,
-      tiempo,
-      duracion
-    );
+    const isValid = validarCampos(nombreG, dosis, tiempo, duracion);
 
     if (!isValid) {
       return;
@@ -143,7 +164,6 @@ document.addEventListener("DOMContentLoaded", function () {
   function validarCampos(nombreG, dosis, tiempo, duracion) {
     let isValid = true; // Variable para validar todos los campos
 
-    // Validación del nombre genérico
     if (!nombreG) {
       mostrarError(
         "Por favor ingresa el nombre genérico del medicamento.",
@@ -206,29 +226,8 @@ document.addEventListener("DOMContentLoaded", function () {
     if (elementoError) {
       elementoError.textContent = mensaje;
       modalError.style.display = "block";
-      setTimeout(function () {
-        modalError.style.display = "none";
-      }, 3000); // Ocultar el modal en 3 segundos
     } else {
       console.error(`Elemento con ID ${idElementoError} no encontrado.`);
-    }
-
-    // Limpiar el mensaje de error de nombre cuando se cambia el nombre de medicamento
-    if (idElementoError === "errorNombre") {
-      document
-        .getElementById("nombrePrestacion")
-        .addEventListener("change", function () {
-          elementoError.textContent = "";
-        });
-    }
-
-    // Limpiar el mensaje de error de nombre cuando se cambia el tipo de medicamento
-    if (idElementoError === "errorNombre") {
-      document
-        .getElementById("tipoPrestacion")
-        .addEventListener("change", function () {
-          elementoError.textContent = "";
-        });
     }
   }
   function showNotification(message, isSuccess) {

@@ -14,6 +14,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const errorPresc1 = document.getElementById("errorPresc1");
   const errorPresc2 = document.getElementById("errorPresc2");
   const errorPresc3 = document.getElementById("errorPresc3");
+  const errorMedicamento = document.getElementById("errorMedicamento");
+  const errorPrestacion = document.getElementById("errorPrestacion");
   console.log("Error 3:", errorPresc3);
   let diagnostico = null;
   let pdfUrl = null;
@@ -44,6 +46,39 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log("ID del diagnóstico seleccionado:", diagnostico);
     console.log("ID del diagnóstico seleccionado:", diagnosticoId);
   });
+  /*   // limpio error paciente
+  document
+    .getElementById("buscarPacienteBtn")
+    .addEventListener("change", function () {
+      const errorPaciente = document.getElementById("errorPaciente");
+      if (errorPaciente && window.pacienteId !== null) {
+        errorPaciente.textContent = "";
+      }
+    }); */
+  // limpio error obra social
+  document
+    .getElementById("obraSocialP")
+    .addEventListener("change", function () {
+      if (errorPresc1) {
+        errorPresc1.textContent = "";
+      }
+    });
+  // limpio error plan
+  document
+    .getElementById("planPrescripcion")
+    .addEventListener("change", function () {
+      if (errorPresc2) {
+        errorPresc2.textContent = "";
+      }
+    });
+  // limpio error diagnostico
+  document
+    .getElementById("diagnosticos")
+    .addEventListener("change", function () {
+      if (errorPresc3) {
+        errorPresc3.textContent = "";
+      }
+    });
   console.log(pacienteId);
   console.log(idRefeps);
   console.log(window.datosProfesional);
@@ -51,9 +86,6 @@ document.addEventListener("DOMContentLoaded", () => {
   document
     .getElementById("guardar")
     .addEventListener("click", async function () {
-      //console.log(window.datosProfesional);
-      //console.log(window.paciente);
-      //console.log(window.paciente.paciente_email);
       const obraSocialSelect = document.querySelector("#obraSocialP");
       const planSelect = document.getElementById("planPrescripcion");
       const diagnostico = diagnosticosInput.value.trim();
@@ -65,27 +97,45 @@ document.addEventListener("DOMContentLoaded", () => {
       // Validar campos vacíos
       let valid = true;
       if (!obraSocial) {
-        //mostrarError(obraSocialP, "Obra Social es requerida.");
         document.getElementById("errorPresc1").textContent =
-          "Obra Social es requerida.";
+          "Debe seleccionar una Obra Social.";
         valid = false;
       } else {
         errorPresc1.innerHTML = "";
       }
       if (!plan) {
-        errorPresc2.innerHTML = "Plan es requerido.";
+        errorPresc2.innerHTML = "Debe seleccionar un Plan.";
         valid = false;
       } else {
         errorPresc2.innerHTML = "";
       }
       if (!diagnostico) {
-        errorPresc3.innerHTML = "Diagnóstico es requerido.";
+        errorPresc3.innerHTML = "Debe seleccionar un Diagnóstico.";
         valid = false;
       } else {
         errorPresc3.innerHTML = "";
       }
+      /*    if (window.pacienteId === null) {
+        errorPaciente.innerHTML = "Debe seleccionar un Paciente.";
+        valid = false;
+      } else {
+        errorPresc3.innerHTML = "";
+      } */
+      if (
+        window.medicamentos.length === 0 &&
+        window.prestaciones.length === 0
+      ) {
+        errorMedicamento.textContent =
+          "Debe agregar al menos un medicamento o prestación.";
+        // errorPrestacion.textContent =
+        //"Debe agregar al menos una prestación o medicamento.";
+        valid = false;
+      } else {
+        errorMedicamento.textContent = "";
+      }
 
       if (!valid) {
+        console.log("Validación fallida, no se envía la prescripción.");
         return;
       }
 
@@ -95,7 +145,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Objeto de prescripción
       const prescripcion = {
-        idREFEPS: window.idREFEPS,
+        idREFEPS: window.datosProfesional.idREFEPS,
         paciente_id: window.pacienteId,
         diagnostico_id: diagnosticoId,
         plan_id: plan,
@@ -108,6 +158,7 @@ document.addEventListener("DOMContentLoaded", () => {
         //enviarEmail,
         //pacienteEmail: window.paciente.paciente_email,
       };
+      console.log("Prescripción:", prescripcion);
       // Si el checkbox está marcado, envío la información del email
       if (enviarEmail) {
         prescripcion.enviarEmail = true;
@@ -177,5 +228,9 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelector(".container-paciente").classList.add("hidden");
     document.getElementById("enviarEmail").checked = false;
     document.getElementById("imprimir").checked = false;
+    document.getElementById("mensajeMedicamento").style.display = "none";
+    document.getElementById("mensajePrestacion").style.display = "none";
+    document.querySelector(".add-medicamento").disabled = false;
+    document.querySelector(".add-prestacion").disabled = false;
   }
 });

@@ -5,6 +5,8 @@ document.addEventListener("DOMContentLoaded", function () {
     "contenedor-prestaciones"
   );
   const listaPrestaciones = document.createElement("div");
+  const posicion = document.getElementById("posiciones");
+  const tipo = document.getElementById("tipoPrestacion");
   contenedorPrestaciones.appendChild(listaPrestaciones);
   const modalError = document.getElementById("modalError");
   const mensajeError = document.getElementById("mensajeError");
@@ -20,28 +22,38 @@ document.addEventListener("DOMContentLoaded", function () {
     ocultarCampos();
   });
 
-  // Evento change para tipo de prestación
+  // limpio error tipo de prestación
   document
     .getElementById("tipoPrestacion")
     .addEventListener("change", function () {
-      const errorNombreElemento = document.getElementById("errorNombre");
-      if (errorNombreElemento) {
-        errorNombreElemento.textContent = "";
+      const errortipo = document.getElementById("errorTipo");
+      if (errortipo) {
+        errortipo.textContent = "";
       }
     });
 
-  // Evento change para nombre de prestación
+  // limpio error nombre de prestación
   document
     .getElementById("nombrePrestacion")
     .addEventListener("change", function () {
-      const errorNombreElemento = document.getElementById("errorNombre");
-      if (errorNombreElemento) {
-        errorNombreElemento.textContent = "";
+      const errorNombre = document.getElementById("errorNombre");
+      if (errorNombre) {
+        errorNombre.textContent = "";
       }
     });
+  // limpio error posicion de prestación
+  document.getElementById("posiciones").addEventListener("change", function () {
+    const errorPosicion = document.getElementById("errorPosicion");
+    if (errorPosicion) {
+      errorPosicion.textContent = "";
+    }
+  });
 
   function agregarPrestacionAlContenedor() {
+    console.log("agregarPrestacionAlContenedor");
     const tipoPrestacionElement = document.getElementById("tipoPrestacion");
+    const posicionId = window.posicionId;
+    console.log(posicionId);
     const tipoPrestacion = tipoPrestacionElement.value.trim();
     const nombrePrestacion = document
       .getElementById("nombrePrestacion")
@@ -55,7 +67,15 @@ document.addEventListener("DOMContentLoaded", function () {
       tipoPrestacionElement.options[
         tipoPrestacionElement.selectedIndex
       ].text.trim();
-
+    console.log({
+      tipoPrestacion,
+      nombrePrestacion,
+      indicacion,
+      justificacion,
+      posicion,
+      posicionId,
+      tipoPrestacionNombre,
+    });
     if (!tipoPrestacion) {
       mostrarError("Por favor selecciona un tipo de prestación.", "errorTipo");
       return;
@@ -68,24 +88,40 @@ document.addEventListener("DOMContentLoaded", function () {
       );
       return;
     }
+    if (!posicion) {
+      mostrarError(
+        "Por favor ingresa la posicion del exámen.",
+        "errorPosicion"
+      );
+      return;
+    }
 
     // Verificar si la combinación ya existe
     const prestacionExistente = prestaciones.find(
       (p) =>
         p.tipoPrestacion === tipoPrestacion &&
-        p.nombrePrestacion === nombrePrestacion
+        p.nombrePrestacion === nombrePrestacion &&
+        p.posicion === posicion
     );
 
     if (prestacionExistente) {
       limpiarCamposP();
       mostrarError(
-        "Esta combinación de tipo y nombre de prestación ya fue agregada.",
+        "Esta combinación de tipo, nombre y posición de prestación ya fue agregada.",
         "errorNombre"
       );
 
       return;
     }
-
+    console.log({
+      tipoPrestacion,
+      nombrePrestacion,
+      indicacion,
+      justificacion,
+      posicion,
+      posicionId,
+      tipoPrestacionNombre,
+    });
     // Hacer una solicitud al servidor para obtener el ID de la prestación seleccionada
     obtenerIdPrestacion(nombrePrestacion)
       .then((idPrestacion) => {
@@ -97,9 +133,10 @@ document.addEventListener("DOMContentLoaded", function () {
           indicacion,
           justificacion,
           posicion,
+          posicionId,
           tipoPrestacionNombre,
         });
-
+        console.log({ prestaciones });
         // Mostrar las prestaciones en el contenedor
         mostrarPrestaciones();
 
@@ -111,6 +148,7 @@ document.addEventListener("DOMContentLoaded", function () {
           indicacion,
           justificacion,
           posicion,
+          posicionId,
           tipoPrestacionNombre,
         });
 
@@ -177,27 +215,9 @@ document.addEventListener("DOMContentLoaded", function () {
       modalError.style.display = "block";
       setTimeout(function () {
         modalError.style.display = "none";
-      }, 3000); // Ocultar el modal en 3 segundos
+      }, 3000); // Oculto el modal en 3 segundos
     } else {
       console.error(`Elemento con ID ${idElementoError} no encontrado.`);
-    }
-
-    // Limpiar el mensaje de error de nombre cuando se cambia el nombre de prestación
-    if (idElementoError === "errorNombre") {
-      document
-        .getElementById("nombrePrestacion")
-        .addEventListener("change", function () {
-          elementoError.textContent = "";
-        });
-    }
-
-    // Limpiar el mensaje de error de nombre cuando se cambia el tipo de prestación
-    if (idElementoError === "errorNombre") {
-      document
-        .getElementById("tipoPrestacion")
-        .addEventListener("change", function () {
-          elementoError.textContent = "";
-        });
     }
   }
   function mostrarCampos() {

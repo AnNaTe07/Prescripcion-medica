@@ -20,8 +20,14 @@ async function obtenerIdPrestacion(nombreSeleccionado) {
 
 // Asigno la función al objeto global window
 window.obtenerIdPrestacion = obtenerIdPrestacion;
-
+window.posicionId = null;
 document.addEventListener("DOMContentLoaded", function () {
+  const tipoPrestacionSelect = document.getElementById("tipoPrestacion");
+  const datalistNombres = document.getElementById("nombresPrestacion");
+  const inputPosicion = document.getElementById("posiciones");
+  const datalistPosicion = document.getElementById("posicioneslist");
+  const inputJustificacion = document.getElementById("justificaciones");
+  const inputIndicacion = document.getElementById("indicaciones");
   // Obtengo opciones de tipo de prestación al cargar la página
   obtenerTiposPrestacion();
 
@@ -56,13 +62,13 @@ document.addEventListener("DOMContentLoaded", function () {
     botonRemoverPrestacion.style.display = "none";
   }
   function limpiarCamposP() {
-    document.getElementById("tipoPrestacion").selectedIndex = 0; // Reset select
-    document.getElementById("nombrePrestacion").value = ""; // Clear input
-    document.getElementById("posiciones").value = ""; // Clear input
-    document.getElementById("indicaciones").value = ""; // Clear input
-    document.getElementById("justificaciones").value = ""; // Clear input
+    document.getElementById("tipoPrestacion").selectedIndex = 0;
+    document.getElementById("nombrePrestacion").value = "";
+    document.getElementById("posiciones").value = "";
+    document.getElementById("indicaciones").value = "";
+    document.getElementById("justificaciones").value = "";
 
-    // Clear error messages
+    //limpio los errores
     document.getElementById("errorTipo").textContent = "";
     document.getElementById("errorNombre").textContent = "";
     document.getElementById("errorIndicacion").textContent = "";
@@ -86,12 +92,6 @@ document.addEventListener("DOMContentLoaded", function () {
       mostrarCampos();
     });
   }
-
-  const tipoPrestacionSelect = document.getElementById("tipoPrestacion");
-  const datalistNombres = document.getElementById("nombresPrestacion");
-  const inputPosicion = document.getElementById("posiciones");
-  const inputJustificacion = document.getElementById("justificaciones");
-  const inputIndicacion = document.getElementById("indicaciones");
 
   let nombresPrestacionCache = [];
 
@@ -153,15 +153,21 @@ document.addEventListener("DOMContentLoaded", function () {
         const opcionesRelacionadas = await response.json();
         console.log(opcionesRelacionadas);
 
-        // Limpiar los inputs
+        // Limpio datalists e inputs
         inputPosicion.value = "";
         inputJustificacion.value = "";
         inputIndicacion.value = "";
+        datalistPosicion.innerHTML = "";
 
         // Llenar los inputs con las opciones relacionadas
-        if (opcionesRelacionadas.posiciones.length > 0) {
-          inputPosicion.value = opcionesRelacionadas.posiciones[0].nombre;
-        }
+
+        opcionesRelacionadas.posiciones.forEach((posicion) => {
+          const option = document.createElement("option");
+          option.value = posicion.nombre;
+          option.dataset.id = posicion.id; // dataset para almacenar el ID
+          datalistPosicion.appendChild(option);
+        });
+
         if (opcionesRelacionadas.justificaciones.length > 0) {
           inputJustificacion.value =
             opcionesRelacionadas.justificaciones[0].nombre;
@@ -176,5 +182,23 @@ document.addEventListener("DOMContentLoaded", function () {
         console.error("Error al obtener opciones relacionadas:", error);
       }
     }
+  });
+  inputPosicion.addEventListener("input", function (event) {
+    const selectedValue = event.target.value.trim();
+    const options = datalistPosicion.querySelectorAll("option");
+
+    let selectedId = null;
+
+    options.forEach((option) => {
+      if (option.value === selectedValue) {
+        selectedId = option.dataset.id; // Obtén el ID del dataset
+      }
+    });
+
+    console.log("ID de la posición seleccionada:", selectedId);
+
+    // Actualiza la variable global o realiza una acción con `selectedId`
+    window.posicionId = selectedId;
+    console.log(window.posicionId);
   });
 });

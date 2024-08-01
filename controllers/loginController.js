@@ -29,7 +29,7 @@ async function processLogin(req, res) {
         .status(401)
         .json({ message: "Correo electrónico o contraseña inválidos" });
     }
-
+    //configuracion de sesion de usuario
     req.session.userId = user.id;
     req.session.rol = user.rol;
 

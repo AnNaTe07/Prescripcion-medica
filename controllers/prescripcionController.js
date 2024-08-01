@@ -23,7 +23,10 @@ const crearPrescripcion = async (req, res) => {
   try {
     await connection.beginTransaction();
 
-    // Creo la prescripción con la fecha actual usando NOW()
+    // Registro de depuración
+    console.log("Datos de entrada:", req.body);
+
+    // Crear la prescripción con la fecha actual usando NOW()
     const queryPrescripcion = `
       INSERT INTO prescripcion (idREFEPS, paciente_id, fecha, diagnostico_id, plan_id, vigencia) 
       VALUES (?, ?, NOW(), ?, ?, ?)
@@ -37,7 +40,10 @@ const crearPrescripcion = async (req, res) => {
     ]);
     const prescripcionId = prescripcionResult.insertId;
 
-    // Inserto medicamentos
+    // Registro de depuración
+    console.log("Prescripción creada con ID:", prescripcionId);
+
+    // Insertar medicamentos
     for (let medicamento of medicamentos) {
       const {
         medicamentoId,
@@ -51,6 +57,13 @@ const crearPrescripcion = async (req, res) => {
         tiempo
       );
       const duracion_id = await obtenerIdONuevoRegistro("duracion", duracion);
+
+      // Registro de depuración
+      console.log("IDs de administración:", {
+        dosis_id,
+        intervalo_tiempo_id,
+        duracion_id,
+      });
 
       // Compruebo si la administración ya está registrada, sino, se insertar
       await obtenerIdONuevoRegistro(
@@ -72,19 +85,82 @@ const crearPrescripcion = async (req, res) => {
         intervalo_tiempo_id,
         duracion_id,
       ]);
+
+      // Registro de depuración
+      console.log("Medicamento insertado:", {
+        prescripcionId,
+        medicamentoId,
+        dosis_id,
+        intervalo_tiempo_id,
+        duracion_id,
+      });
     }
 
-    // Inserto prestaciones
+    // Inserto prestaciones con posicion_id y observacion
     for (let prestacion of prestaciones) {
-      const { id } = prestacion;
+      const { id: prestacion_id, posicionId, observacion } = prestacion;
+
+      // Registro de depuración
+      console.log("Prestación a insertar:", {
+        prestacion_id,
+        posicionId,
+        observacion,
+      });
+
+      // Insertar en prescripcion_prestacion con posicion_id y observacion
       const queryPrescripcionPrestacion = `
-        INSERT INTO prescripcion_prestacion (prescripcion_id, prestacion_id) 
-        VALUES (?, ?)
+        INSERT INTO prescripcion_prestacion (prescripcion_id, prestacion_id, posicion_id, observacion) 
+        VALUES (?, ?, ?, ?)
       `;
       await connection.execute(queryPrescripcionPrestacion, [
         prescripcionId,
-        id,
+        prestacion_id, // Aquí usamos prestacion_id
+        posicionId,
+        observacion || null, // Si no hay observación, establecer como NULL
       ]);
+
+      // Registro de depuración
+      console.log("Prestación insertada:", {
+        prescripcionId,
+        prestacion_id,
+        posicionId,
+        observacion,
+      });
+
+      // Verificar si la combinación prestacion_id y posicionId ya existe en prestacion_posicion
+      const checkPrestacionPosicion = `
+        SELECT COUNT(*) as count FROM prestacion_posicion 
+        WHERE prestacion_id = ? AND posicion_id = ?
+      `;
+      const [rows] = await connection.execute(checkPrestacionPosicion, [
+        prestacion_id,
+        posicionId,
+      ]);
+      const count = rows[0].count;
+
+      if (count === 0) {
+        // Insertar en prestacion_posicion si no existe
+        const queryPrestacionPosicion = `
+          INSERT INTO prestacion_posicion (prestacion_id, posicion_id) 
+          VALUES (?, ?)
+        `;
+        await connection.execute(queryPrestacionPosicion, [
+          prestacion_id,
+          posicionId,
+        ]);
+
+        // Registro de depuración
+        console.log("Prestacion_posicion insertada:", {
+          prestacion_id,
+          posicionId,
+        });
+      } else {
+        // Registro de depuración
+        console.log("Prestacion_posicion ya existe:", {
+          prestacion_id,
+          posicionId,
+        });
+      }
     }
 
     // Generar el PDF
@@ -92,7 +168,7 @@ const crearPrescripcion = async (req, res) => {
       profesional,
       paciente,
       diagnostico,
-      fechaPrescripcion: new Date().toISOString().split("T")[0], //fecha actual en formato YYYY-MM-DD
+      fechaPrescripcion: new Date().toISOString().split("T")[0], // fecha actual en formato YYYY-MM-DD
       vigencia,
       medicamentos,
       prestaciones,
@@ -118,7 +194,7 @@ const crearPrescripcion = async (req, res) => {
       // Configuro las opciones del correo electrónico
       const mailOptions = {
         from: "andreanataliatello@outlook.com",
-        to: pacienteEmail, //correo electrónico del paciente
+        to: pacienteEmail, // correo electrónico del paciente
         subject: "Prescripción Médica",
         text: "Adjunto encontrará su prescripción médica.",
         attachments: [
@@ -227,6 +303,7 @@ const getPrescripcionesAnteriores = async (req, res) => {
   const { idREFEPS } = req.body;
   console.log("IdREFEPS:", idREFEPS);
   console.log("PacienteId:", paciente_id);
+
   try {
     // Consulta para obtener prescripciones
     const prescripcionQuery = `
@@ -286,16 +363,22 @@ const getPrescripcionesAnteriores = async (req, res) => {
       prescripcionIds
     );
 
-    // Consulta para obtener prestaciones
+    // Consulta para obtener prestaciones y posiciones de manera optimizada
     const prestacionesQuery = `
       SELECT 
         pr.prescripcion_id,
         pr.prestacion_id,
         pt.nombre AS nombre_prestacion,
+        pos.nombre AS nombre_posicion,
         pr.observacion
       FROM 
         prescripcion_prestacion pr
         LEFT JOIN prestacion pt ON pr.prestacion_id = pt.id
+        LEFT JOIN (
+          SELECT ppos.prestacion_id, pos.nombre 
+          FROM prestacion_posicion ppos 
+          LEFT JOIN posicion pos ON ppos.posicion_id = pos.id
+        ) pos ON pr.prestacion_id = pos.prestacion_id
       WHERE 
         pr.prescripcion_id IN (${buildInClause(prescripcionIds)})
       ORDER BY 
@@ -305,13 +388,14 @@ const getPrescripcionesAnteriores = async (req, res) => {
       prestacionesQuery,
       prescripcionIds
     );
+
     const formatearFecha = (fecha) => {
       const date = new Date(fecha);
       return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
     };
 
     const resultadosAgrupados = {};
-    console.log("Prescripciones225:", prescripciones);
+    console.log("Prescripciones:", prescripciones);
     prescripciones.forEach((prescripcion) => {
       resultadosAgrupados[prescripcion.prescripcion_id] = {
         fecha: formatearFecha(prescripcion.fecha),
@@ -332,13 +416,23 @@ const getPrescripcionesAnteriores = async (req, res) => {
       }
     });
 
+    const prestacionesMap = new Map();
     prestaciones.forEach((prestacion) => {
-      if (resultadosAgrupados[prestacion.prescripcion_id]) {
-        resultadosAgrupados[prestacion.prescripcion_id].prestaciones.push({
+      const key = `${prestacion.prescripcion_id}-${prestacion.prestacion_id}`;
+      if (!prestacionesMap.has(key)) {
+        prestacionesMap.set(key, {
           prestacion_id: prestacion.prestacion_id,
           nombre_prestacion: prestacion.nombre_prestacion,
+          nombre_posicion: prestacion.nombre_posicion, // Incluye el nombre de la posición
           observacion: prestacion.observacion || "N/A",
         });
+      }
+    });
+
+    prestacionesMap.forEach((prestacion, key) => {
+      const [prescripcion_id, prestacion_id] = key.split("-");
+      if (resultadosAgrupados[prescripcion_id]) {
+        resultadosAgrupados[prescripcion_id].prestaciones.push(prestacion);
       }
     });
 

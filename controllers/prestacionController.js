@@ -14,13 +14,15 @@ const prestacionController = {
       const posiciones = opcionesRelacionadas.filter(
         (opcion) => opcion.tipo === "posicion"
       );
+      //console.log("Posiciones:", posiciones);
+
       const justificaciones = opcionesRelacionadas.filter(
         (opcion) => opcion.tipo === "justificacion"
       );
       const indicaciones = opcionesRelacionadas.filter(
         (opcion) => opcion.tipo === "indicacion"
       );
-
+      console.log({ posiciones, justificaciones, indicaciones });
       res.json({ posiciones, justificaciones, indicaciones });
     } catch (error) {
       console.error(
@@ -67,7 +69,7 @@ const prestacionController = {
     }
   },
   async getIdPrestacionPorNombre(req, res) {
-    const { nombrePrestacion } = req.params; // O req.body, dependiendo de cómo lo envíes
+    const { nombrePrestacion } = req.params;
 
     try {
       const idPrestacion = await Prestacion.getIdPrestacionPorNombre(

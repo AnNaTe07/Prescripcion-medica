@@ -32,9 +32,9 @@ app.set("view engine", "pug");
 app.use(
   session({
     secret: "laboratorio2",
-    resave: false,
-    saveUninitialized: true,
-    cookie: { secure: false },
+    resave: false, //evita que la sesión se reescriba si no ha cambiado
+    saveUninitialized: true, //guarda la sesión aunque no se inicialice
+    cookie: { secure: false }, //configuracion de desarrollo
   })
 );
 
@@ -47,11 +47,17 @@ app.get("/", (req, res) => {
 app.use("/login", loginRoutes);
 // Ruta para formPrescripcion
 app.get("/formPrescripcion", checkAuthentication, (req, res) => {
-  // Renderizo la vista de formPrescripcion
-  res.render("formPrescripcion", {
-    usuario: req.session.userId,
-    rol: req.session.rol,
-  });
+  if (
+    req.session.rol === "profesional" ||
+    req.session.rol === "admin_profesional"
+  ) {
+    res.render("formPrescripcion", {
+      usuario: req.session.userId,
+      rol: req.session.rol,
+    });
+  } else {
+    res.redirect("/"); // Redirige si el rol no tiene acceso
+  }
 });
 // Rutas protegidas
 app.get("/inicio", checkAuthentication, (req, res) => {
@@ -63,35 +69,36 @@ app.get("/inicio", checkAuthentication, (req, res) => {
   });
 });
 
-app.get("/formPrescripcion", checkAuthentication, (req, res) => {
-  const rol = req.session.rol;
-  console.log("Rol en /formPrescripcion:", rol);
-  res.render("formPrescripcion", {
-    usuario: req.session.userId,
-    rol: req.session.rol,
-  });
-});
-
 app.get("/formUsuario", checkAuthentication, (req, res) => {
-  const rol = req.session.rol;
-  console.log("Rol en /formUsuario:", rol);
-  res.render("formUsuario", {
-    usuario: req.session.userId,
-    rol: req.session.rol,
-  });
+  if (
+    req.session.rol === "administrador" ||
+    req.session.rol === "admin_profesional"
+  ) {
+    res.render("formUsuario", {
+      usuario: req.session.userId,
+      rol: req.session.rol,
+    });
+  } else {
+    res.redirect("/"); // Redirige si el rol no tiene acceso
+  }
 });
 
-app.get("/formPaciente", checkAuthentication, (req, res) => {
+/* app.get("/formPaciente", checkAuthentication, (req, res) => {
   res.render("formPaciente");
-});
+}); */
 
 app.get("/formMedicamento", checkAuthentication, (req, res) => {
-  const rol = req.session.rol;
-  console.log("Rol en /formMedicamento:", rol);
-  res.render("formMedicamento", {
-    usuario: req.session.userId,
-    rol: req.session.rol,
-  });
+  if (
+    req.session.rol === "administrador" ||
+    req.session.rol === "admin_profesional"
+  ) {
+    res.render("formMedicamento", {
+      usuario: req.session.userId,
+      rol: req.session.rol,
+    });
+  } else {
+    res.redirect("/"); // Redirige si el rol no tiene acceso
+  }
 });
 
 app.use("/aux", auxiliarRoutes);

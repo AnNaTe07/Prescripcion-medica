@@ -1,17 +1,9 @@
 const pool = require("../config/database");
 
 class Prestacion {
-  constructor(
-    id,
-    nombre,
-    posicion_id,
-    tipo_prestacion_id,
-    indicacion_id,
-    justificacion_id
-  ) {
+  constructor(id, nombre, tipo_prestacion_id, indicacion_id, justificacion_id) {
     this.id = id;
     this.nombre = nombre;
-    this.posicion_id = posicion_id;
     this.tipo_prestacion_id = tipo_prestacion_id;
     this.indicacion_id = indicacion_id;
     this.justificacion_id = justificacion_id;
@@ -19,19 +11,17 @@ class Prestacion {
 
   static async create(
     nombre,
-    posicion_id,
     tipo_prestacion_id,
     indicacion_id,
     justificacion_id
   ) {
     const [result] = await pool.execute(
-      "INSERT INTO prestacion (nombre, posicion_id,tipo_prestacion_id, indicacion_id, justificacion_id) VALUES (?, ?, ?, ?, ?)",
-      [nombre, posicion_id, tipo_prestacion_id, indicacion_id, justificacion_id]
+      "INSERT INTO prestacion (nombre, tipo_prestacion_id, indicacion_id, justificacion_id) VALUES (?, ?, ?, ?)",
+      [nombre, tipo_prestacion_id, indicacion_id, justificacion_id]
     );
     return new Prestacion(
       result.insertId,
       nombre,
-      posicion_id,
       tipo_prestacion_id,
       indicacion_id,
       justificacion_id
@@ -46,7 +36,6 @@ class Prestacion {
       const {
         id,
         nombre,
-        posicion_id,
         tipo_prestacion_id,
         indicacion_id,
         justificacion_id,
@@ -54,7 +43,6 @@ class Prestacion {
       return new Prestacion(
         id,
         nombre,
-        posicion_id,
         tipo_prestacion_id,
         indicacion_id,
         justificacion_id
@@ -71,7 +59,6 @@ class Prestacion {
         new Prestacion(
           row.id,
           row.nombre,
-          row.posicion_id,
           row.tipo_prestacion_id,
           row.indicacion_id,
           row.justificacion_id
@@ -82,26 +69,17 @@ class Prestacion {
   static async update(
     id,
     nombre,
-    posicion_id,
     tipo_prestacion_id,
     indicacion_id,
     justificacion_id
   ) {
     await pool.execute(
-      "UPDATE prestacion SET nombre = ?, posicion_id = ?,tipo_prestacion_id=?, indicacion_id = ?, justificacion_id = ? WHERE id = ?",
-      [
-        nombre,
-        posicion_id,
-        tipo_prestacion_id,
-        indicacion_id,
-        justificacion_id,
-        id,
-      ]
+      "UPDATE prestacion SET nombre = ?, tipo_prestacion_id=?, indicacion_id = ?, justificacion_id = ? WHERE id = ?",
+      [nombre, tipo_prestacion_id, indicacion_id, justificacion_id, id]
     );
     return new Prestacion(
       id,
       nombre,
-      posicion_id,
       tipo_prestacion_id,
       indicacion_id,
       justificacion_id
@@ -111,17 +89,15 @@ class Prestacion {
   static async delete(id) {
     await pool.execute("DELETE FROM prestacion WHERE id = ?", [id]);
   }
-  //**obtengo las opciones relacionadas por nombre de prestación***********/
-  static async getOpcionesRelacionadasPorNombre(nombreSeleccionado) {
-    console.log("Función getOpcionesRelacionadasPorNombre llamada");
-    try {
-      console.log("Conexión a la base de datos establecida");
 
+  static async getOpcionesRelacionadasPorNombre(nombreSeleccionado) {
+    try {
       const [rows] = await pool.execute(
         `
       SELECT 'posicion' AS tipo, p.id, p.nombre
-      FROM prestacion pr
-      JOIN posicion p ON pr.posicion_id = p.id
+      FROM prestacion_posicion pp
+      JOIN posicion p ON pp.posicion_id = p.id
+      JOIN prestacion pr ON pp.prestacion_id = pr.id
       WHERE pr.nombre = ?
 
       UNION
@@ -141,7 +117,6 @@ class Prestacion {
         [nombreSeleccionado, nombreSeleccionado, nombreSeleccionado]
       );
 
-      console.log("Datos obtenidos de la base de datos:", rows);
       return rows;
     } catch (error) {
       console.error(
@@ -152,7 +127,6 @@ class Prestacion {
     }
   }
 
-  //*******************obtener nombre de prestacion al seleccionar tipo**/
   static async getNombresPrestacionPorNombre(tipo, nombre) {
     try {
       const [rows] = await pool.execute(
@@ -169,23 +143,18 @@ class Prestacion {
     }
   }
 
-  //*******************carga opciones de nombre segun tipo*****/
-  // Método para obtener los nombres de prestación según el tipo seleccionado
   static async getNombresPrestacionPorTipo(tipo) {
     try {
       const [rows] = await pool.execute(
         "SELECT id, nombre FROM prestacion WHERE tipo_prestacion_id = ?",
         [tipo]
       );
-      //console.log("Datos obtenidos:", rows);
       return rows;
     } catch (error) {
       console.error("Error al obtener nombres de prestación por tipo:", error);
       throw new Error("Error interno del servidor");
     }
   }
-
-  //***********obtengo los tipos de prestación disponibles*******/
 
   static async getIdPrestacionPorNombre(nombrePrestacion) {
     try {
@@ -195,9 +164,9 @@ class Prestacion {
       );
 
       if (rows.length > 0) {
-        return rows[0].id; // Devolver el primer ID encontrado (debería ser único por la clave primaria)
+        return rows[0].id;
       } else {
-        return null; // Devolver null si no se encontró ninguna prestación con ese nombre
+        return null;
       }
     } catch (error) {
       console.error("Error al obtener ID de prestación por nombre:", error);
@@ -205,4 +174,5 @@ class Prestacion {
     }
   }
 }
+
 module.exports = Prestacion;
