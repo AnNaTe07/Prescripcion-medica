@@ -44,3 +44,37 @@ Ibuprofeno 500mg.
  Debe mostrar prescripciones anteriores para facilitar el registro de las prescripciones actuales.
  Debe permitir registrar resultado y/o observación sobre prestaciones de prescripciones anteriormente
 registradas.
+
+
+## Tecnologías
+
+- JavaScript (frontend y backend)  
+- Node.js con Express.js (backend)  
+- Bootstrap (frontend)  
+- Base de datos MySQL  
+- Modelo MVC  
+- Autenticación con JWT  
+- Envío de emails con Nodemailer  
+
+---
+
+## Características principales
+
+- Login y gestión de usuarios con roles: administrador, profesional, superAdmin  
+- Alta, baja y modificación de usuarios y medicamentos  
+- Uso de cookies y JWT para la gestión segura de sesiones  
+- Envío automático de prescripciones por email  
+- Generación e impresión de prescripciones en formato PDF  
+- Archivo histórico de prescripciones para consulta  
+
+---
+
+## Rol y aportes
+
+- Desarrollo frontend y backend en JavaScript siguiendo arquitectura MVC  
+- Implementación de autenticación segura con JWT y manejo de cookies  
+- Integración con servicio de correo para envío automático de prescripciones  
+- Diseño e implementación del sistema de roles y permisos para usuarios  
+- Maquetado responsive con Bootstrap  
+
+---
